@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiLogPayMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.LogPayVo" id="logMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="money" column="money"/>
+        <result property="type" column="type"/>
+        <result property="currencyType" column="currency_type"/>
+        <result property="typeTxt" column="type_txt"/>
+        <result property="currencyTxt" column="currency_txt"/>
+        <result property="remarks" column="remarks"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个记录详情-->
+    <select id="queryObjectByUser" resultMap="logMap">
+        select * from log_pay where user_id = #{userId} and id = #{logId}
+    </select>
+
+    <!--查询所有记录-->
+    <select id="allLog" resultMap="logMap">
+        select * from log_pay where 1 = 1
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.LogPayVo" useGeneratedKeys="true" keyProperty="id">
+        insert into log_pay
+        (
+            `id`,
+            `user_id`,
+            `money`,
+            `type`,
+            `currency_type`,
+            `type_txt`,
+            `currency_txt`,
+            `remarks`,
+            `create_time`
+        )
+        values
+        (
+            #{id},
+            #{userId},
+            #{money},
+            #{type},
+            #{currencyType},
+            #{typeTxt},
+            #{currencyTxt},
+            #{remarks},
+            #{createTime}
+        )
+    </insert>
+
+    <delete id="deleteAllLog">
+        delete from log_pay where 1 = 1
+    </delete>
+
+</mapper>

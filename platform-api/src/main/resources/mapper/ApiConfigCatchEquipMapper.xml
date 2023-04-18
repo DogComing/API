@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiConfigCatchEquipMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.ConfigCatchEquipVo" id="catchMap">
+        <result property="id" column="id"/>
+        <result property="grade" column="grade"/>
+        <result property="equipName" column="equip_name"/>
+        <result property="equipDesc" column="equip_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="Unum" column="u_num"/>
+        <result property="durability" column="durability"/>
+        <result property="catchType" column="catch_type"/>
+        <result property="deedType" column="deed_type"/>
+        <result property="extraOne" column="extra_one"/>
+        <result property="extraTwo" column="extra_two"/>
+        <result property="isGem" column="is_gem"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个捕捉道具详情-->
+    <select id="queryObject" resultMap="catchMap">
+        select * from config_catch_equip where id = #{value}
+    </select>
+
+    <!--查询捕捉道具列表-->
+    <select id="queryList" resultMap="catchMap">
+        select * from config_catch_equip where 1 = 1
+    </select>
+
+    <select id="queryListByMap" resultMap="catchMap">
+        select * from config_catch_equip
+        where 1 = 1
+        <if test="isGem != null">
+            and `is_gem` = #{isGem}
+        </if>
+    </select>
+
+    <select id="queryObjectByType" resultMap="catchMap">
+        select * from config_catch_equip where grade = #{grade} and catch_type = #{type}
+    </select>
+
+    <select id="queryObjectByGrade" resultMap="catchMap">
+        select * from config_catch_equip where grade = #{grade}
+    </select>
+
+</mapper>

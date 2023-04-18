@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiConfigPropMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.ConfigPropVo" id="propMap">
+        <result property="id" column="id"/>
+        <result property="grade" column="grade"/>
+        <result property="propName" column="prop_name"/>
+        <result property="propDesc" column="prop_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="propType" column="prop_type"/>
+        <result property="useType" column="use_type"/>
+        <result property="attributeType" column="attribute_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个饲料详情-->
+    <select id="queryObject" resultMap="propMap">
+        select * from config_prop where id = #{value}
+    </select>
+
+    <!--查询饲料列表-->
+    <select id="allProp" resultMap="propMap">
+        select * from config_prop where 1 = 1
+    </select>
+
+    <select id="queryListByMap" resultMap="propMap">
+        select * from config_prop where 1 = 1
+        <if test="forageType != null">
+            and `forage_type` = #{forageType}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserCatchEquipMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserCatchEquipVo" id="catchMap">
+        <result property="id" column="id"/>
+        <result property="equipId" column="equip_id"/>
+        <result property="grade" column="grade"/>
+        <result property="userId" column="user_id"/>
+        <result property="equipName" column="equip_name"/>
+        <result property="equipDesc" column="equip_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="durabilityMax" column="durability_max"/>
+        <result property="durabilityResidue" column="durability_residue"/>
+        <result property="catchType" column="catch_type"/>
+        <result property="deedType" column="deed_type"/>
+        <result property="extraOne" column="extra_one"/>
+        <result property="extraTwo" column="extra_two"/>
+        <result property="isGem" column="is_gem"/>
+        <result property="isNft" column="is_nft"/>
+        <result property="isDraw" column="is_draw"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="nftId" column="nft_id"/>
+        <result property="isUse" column="is_use"/>
+        <result property="equipNum" column="equip_num"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个捕捉道具详情-->
+    <select id="queryObject" resultMap="catchMap">
+		select * from oil_user_catch_equip where equip_id = #{value}
+	</select>
+
+    <!--查询捕捉道具列表-->
+    <select id="queryList" resultMap="catchMap">
+        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0
+        <if test="catchType != null">
+            and catch_type = #{catchType}
+        </if>
+        <if test="isUse != null">
+            and is_use = #{isUse}
+        </if>
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!--查询捕捉道具总数-->
+    <select id="queryTotal" resultType="int">
+		select count(1) from oil_user_catch_equip
+        where 1 = 1 and equip_num > 0
+        <if test="catchType != null">
+            and catch_type = #{catchType}
+        </if>
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+	</select>
+
+    <select id="queryObjectByUser" resultMap="catchMap">
+        select * from oil_user_catch_equip where id = #{id} and user_id = #{userId}
+    </select>
+
+    <select id="queryObjectByEquipId" resultMap="catchMap">
+        select * from oil_user_catch_equip where equip_id = #{equipId} and user_id = #{userId}
+    </select>
+
+    <select id="queryObjectByGrade" resultMap="catchMap">
+        select * from oil_user_catch_equip where is_use = 1 and grade = #{grade} and catch_type = #{type} and user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.UserCatchEquipVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_user_catch_equip
+        (
+            `equip_id`,
+            `grade`,
+            `user_id`,
+            `equip_name`,
+            `equip_desc`,
+            `img_name`,
+            `catch_type`,
+            `deed_type`,
+            `durability_max`,
+            `durability_residue`,
+            `extra_one`,
+            `extra_two`,
+            `is_gem`,
+            `equip_num`,
+            `create_time`
+        )
+        values
+        (
+            #{equipId},
+            #{grade},
+            #{userId},
+            #{equipName},
+            #{equipDesc},
+            #{imgName},
+            #{catchType},
+            #{deedType},
+            #{durabilityMax},
+            #{durabilityResidue},
+            #{extraOne},
+            #{extraTwo},
+            #{isGem},
+            #{equipNum},
+            #{createTime}
+        )
+    </insert>
+
+    <update id="receiveRewards" parameterType="java.util.Map">
+        update oil_user_catch_equip
+        <set>
+            <if test="awardNum >= 0">`equip_num` = equip_num + #{awardNum}</if>
+        </set>
+        where equip_id = #{equipId} and user_id = #{userId}
+    </update>
+
+    <update id="makeUseOf" parameterType="java.util.Map">
+        update oil_user_catch_equip
+        <set>
+            <if test="awardNum >= 0">`durability_residue` = durability_residue - #{awardNum}</if>
+        </set>
+        where id = #{id} and user_id = #{userId} and equip_num > 0
+    </update>
+
+    <select id="allList" resultMap="catchMap">
+        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0 and user_id = #{userId} order by grade desc,durability_residue desc
+    </select>
+
+    <select id="queryListByMap" resultMap="catchMap">
+        select * from oil_user_catch_equip
+        where 1 = 1 and equip_num > 0
+        <if test="isGem != null">
+            and `is_gem` = #{isGem}
+        </if>
+        <if test="userId != null">
+            and `user_id` = #{userId}
+        </if>
+    </select>
+
+    <delete id="deleteByUser">
+        delete from oil_user_catch_equip where user_id = #{userId} and id = #{id}
+    </delete>
+
+    <update id="updateNFT" parameterType="java.util.Map">
+        update oil_user_catch_equip
+        <set>
+            <if test="isNft != null">`is_nft` = #{isNft},</if>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="isFreeze != null">`is_freeze` = #{isFreeze},</if>
+            <if test="nftId != null">`nft_id` = #{nftId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+    <update id="updateBatchIsUse">
+        update `oil_user_catch_equip` set `is_use` = 0 where user_id = #{userId} and catch_type = #{catchType}
+    </update>
+
+    <update id="update" parameterType="java.util.Map">
+        update oil_user_catch_equip
+        <set>
+            <if test="isUse != null">`is_use` = #{isUse},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+</mapper>

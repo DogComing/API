@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiConfigMapFightRatioMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.ConfigMapFightRatioVo" id="fightMap">
+        <result property="id" column="id"/>
+        <result property="mapId" column="map_id"/>
+        <result property="equipGrade01" column="equip_grade_01"/>
+        <result property="equipGrade02" column="equip_grade_02"/>
+        <result property="equipGrade03" column="equip_grade_03"/>
+        <result property="equipGrade04" column="equip_grade_04"/>
+        <result property="equipGrade05" column="equip_grade_05"/>
+        <result property="equipGrade06" column="equip_grade_06"/>
+        <result property="equipGrade07" column="equip_grade_07"/>
+        <result property="equipGrade08" column="equip_grade_08"/>
+        <result property="equipGrade09" column="equip_grade_09"/>
+        <result property="equipGrade10" column="equip_grade_10"/>
+    </resultMap>
+
+    <!--查询某个套餐详情-->
+    <select id="queryObject" resultMap="fightMap">
+        select * from config_map_fight_ratio where id = #{value}
+    </select>
+
+    <!--查询套餐列表-->
+    <select id="queryList" resultMap="fightMap">
+        select * from config_map_fight_ratio where 1 = 1
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!--查询套餐总数-->
+    <select id="queryTotal" resultType="int">
+        select count(1) from config_map_fight_ratio where 1 = 1
+    </select>
+
+    <select id="queryByMapId" resultMap="fightMap">
+        select * from config_map_fight_ratio where map_id = #{mapId}
+    </select>
+
+    <select id="allGoods" resultMap="fightMap">
+        select * from config_map_fight_ratio where 1 = 1
+    </select>
+
+</mapper>

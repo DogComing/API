@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiLogAdMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.LogAdVo" id="adLogMap">
+        <result property="adId" column="ad_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询配置表某个广告记录详情-->
+    <select id="queryObjectByUser" resultMap="adLogMap">
+        select * from log_ad where user_id = #{userId} and ad_id = #{adId}
+    </select>
+
+    <!--查询配置表所有广告记录-->
+    <select id="allAdLog" resultMap="adLogMap">
+        select * from log_ad where 1 = 1
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.LogAdVo">
+        insert into log_ad
+        (
+            `ad_id`,
+            `user_id`,
+            `create_time`
+        )
+        values
+        (
+            #{adId},
+            #{userId},
+            #{createTime}
+        )
+    </insert>
+
+    <delete id="deleteAllLog">
+        delete from log_ad where 1 = 1
+    </delete>
+
+</mapper>

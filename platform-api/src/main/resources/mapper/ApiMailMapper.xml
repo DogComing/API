@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiMailMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.MailVo" id="mailMap">
+        <result property="id" column="id"/>
+        <result property="mailTitle" column="mail_title"/>
+        <result property="mailContent" column="mail_content"/>
+        <result property="awardNum" column="award_num"/>
+        <result property="imgName" column="img_name"/>
+        <result property="isAttribute" column="is_attribute"/>
+        <result property="awardType" column="award_type"/>
+        <result property="kindId" column="kind_id"/>
+        <result property="isReceive" column="is_receive"/>
+        <result property="isRead" column="is_read"/>
+        <result property="userId" column="user_id"/>
+        <result property="brawnNum" column="brawn_num"/>
+        <result property="gameAward" column="game_award"/>
+        <result property="type" column="type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="mailMap">
+        SELECT * FROM oil_mail
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        SELECT count(1) FROM oil_mail
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryObject" resultMap="mailMap">
+		select * from oil_mail where id = #{value}
+	</select>
+
+    <insert id="save" parameterType="com.platform.entity.MailVo" useGeneratedKeys="true" keyProperty="id">
+		insert into oil_mail
+		(
+			`mail_title`,
+			`mail_content`,
+            `award_num`,
+            `img_name`,
+            `is_attribute`,
+            `award_type`,
+            `kind_id`,
+            `user_id`,
+            `brawn_num`,
+            `game_award`,
+            `is_receive`,
+            `type`,
+            `create_time`
+		)
+		values
+		(
+			#{mailTitle},
+			#{mailContent},
+			#{awardNum},
+            #{imgName},
+            #{isAttribute},
+            #{awardType},
+            #{kindId},
+            #{userId},
+            #{brawnNum},
+            #{gameAward},
+            #{isReceive},
+            #{type},
+            #{createTime}
+		)
+	</insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update oil_mail
+        <set>
+            <if test="isRead != null">`is_read` = #{isRead},</if>
+            <if test="isReceive != null">`is_receive` = #{isReceive},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="allList" resultMap="mailMap">
+        select * from oil_mail where user_id = #{userId}
+    </select>
+
+    <select id="allListByMap" resultMap="mailMap">
+        select * from oil_mail
+        <where>
+            <if test="isRead != null">
+                and is_read = #{isRead}
+            </if>
+            <if test="isReceive != null">
+                and is_receive = #{isReceive}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateByUser" parameterType="java.util.Map">
+        update oil_mail
+        <set>
+            <if test="isRead != null">`is_read` = #{isRead},</if>
+            <if test="isReceive != null">`is_receive` = #{isReceive},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteByUser" parameterType="java.util.Map">
+        delete from oil_mail
+        <where>
+            <if test="isRead != null">
+                and is_read = #{isRead}
+            </if>
+            <if test="isReceive != null">
+                and is_receive = #{isReceive}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </delete>
+
+</mapper>

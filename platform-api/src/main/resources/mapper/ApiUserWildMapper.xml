@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserWildMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserWildVo" id="wildMap">
+        <result property="id" column="id"/>
+        <result property="wildId" column="wild_id"/>
+        <result property="grade" column="grade"/>
+        <result property="userId" column="user_id"/>
+        <result property="wildName" column="wild_name"/>
+        <result property="wildDesc" column="wild_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="fightingNum" column="fighting_num"/>
+        <result property="isFight" column="is_fight"/>
+        <result property="wildType" column="wild_type"/>
+        <result property="wildNum" column="wild_num"/>
+        <result property="isNft" column="is_nft"/>
+        <result property="nftId" column="nft_id"/>
+        <result property="isDraw" column="is_draw"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="isIgnoreTalent" column="is_ignore_talent"/>
+        <result property="durabilityMax" column="durability_max"/>
+        <result property="durabilityResidue" column="durability_residue"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个饲料详情-->
+    <select id="queryObject" resultMap="wildMap">
+        select * from oil_user_wild where id = #{value}
+    </select>
+
+    <!--查询饲料列表-->
+    <select id="queryList" resultMap="wildMap">
+        select * from oil_user_wild
+        <where>
+            <if test="isFight != null">
+                AND is_fight = #{isFight}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by distance asc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!--查询饲料总数-->
+    <select id="queryTotal" resultType="int">
+        select count(1) from oil_user_wild
+        <where>
+            <if test="isFight != null">
+                AND is_fight = #{isFight}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryObjectByUser" resultMap="wildMap">
+        select * from oil_user_wild where id = #{id} and user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.UserWildVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_user_wild
+        (
+            `wild_id`,
+            `grade`,
+            `user_id`,
+            `wild_name`,
+            `wild_desc`,
+            `img_name`,
+            `fighting_num`,
+            `is_fight`,
+            `is_ignore_talent`,
+            `wild_type`,
+            `wild_num`,
+            `durability_max`,
+            `durability_residue`,
+            `create_time`
+        )
+        values
+        (
+            #{wildId},
+            #{grade},
+            #{userId},
+            #{wildName},
+            #{wildDesc},
+            #{imgName},
+            #{fightingNum},
+            #{isFight},
+            #{isIgnoreTalent},
+            #{wildType},
+            #{wildNum},
+            #{durabilityMax},
+            #{durabilityResidue},
+            #{createTime}
+        )
+    </insert>
+
+    <update id="receiveRewards" parameterType="java.util.Map">
+        update oil_user_wild
+        <set>
+            <if test="awardNum >= 0">`wild_num` = wild_num + #{awardNum}</if>
+        </set>
+        where wild_id = #{wildId} and user_id = #{userId}
+    </update>
+
+    <update id="makeUseOf" parameterType="java.util.Map">
+        update oil_user_wild
+        <set>
+            <if test="useNum >= 0">`wild_num` = wild_num - #{useNum}</if>
+        </set>
+        where wild_id = #{wildId} and user_id = #{userId} and wild_num > 0
+    </update>
+
+    <select id="allList" resultMap="wildMap">
+        select * from oil_user_wild where 1 = 1 and wild_num > 0 and user_id = #{userId} order by grade desc,fighting_num desc
+    </select>
+
+    <select id="allListByFight" resultMap="wildMap">
+        select * from oil_user_wild where 1 = 1 and wild_num > 0 and user_id = #{userId} and is_fight = #{isFight}
+    </select>
+
+    <delete id="deleteByUser">
+        delete from oil_user_wild where user_id = #{userId} and id = #{id}
+    </delete>
+
+    <update id="updateNFT" parameterType="java.util.Map">
+        update oil_user_wild
+        <set>
+            <if test="isNft != null">`is_nft` = #{isNft},</if>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="isFreeze != null">`is_freeze` = #{isFreeze},</if>
+            <if test="nftId != null">`nft_id` = #{nftId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+</mapper>

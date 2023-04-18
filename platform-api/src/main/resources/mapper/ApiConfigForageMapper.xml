@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiConfigForageMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.ConfigForageVo" id="forageMap">
+        <result property="id" column="id"/>
+        <result property="grade" column="grade"/>
+        <result property="forageName" column="forage_name"/>
+        <result property="forageDesc" column="forage_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="fightingNum" column="fighting_num"/>
+        <result property="forageType" column="forage_type"/>
+        <result property="isIgnoreTalent" column="is_ignore_talent"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个饲料详情-->
+    <select id="queryObject" resultMap="forageMap">
+        select * from config_forage where id = #{value}
+    </select>
+
+    <!--查询某个饲料详情-->
+    <select id="queryObjectByMap" resultMap="forageMap">
+        select * from config_forage where 1 = 1
+        <if test="grade != null">
+            and grade = #{grade}
+        </if>
+        <if test="forageType != null">
+            and forage_type = #{forageType}
+        </if>
+    </select>
+
+    <!--查询饲料列表-->
+    <select id="allForage" resultMap="forageMap">
+        select * from config_forage where 1 = 1
+    </select>
+
+    <select id="queryListByMap" resultMap="forageMap">
+        select * from config_forage
+        where 1 = 1
+        <if test="forageType != null">
+            and `forage_type` = #{forageType}
+        </if>
+    </select>
+
+    <select id="queryObjectByGrade" resultMap="forageMap">
+        select * from config_forage where grade = #{grade}
+    </select>
+
+</mapper>

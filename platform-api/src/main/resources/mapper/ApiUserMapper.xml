@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserVo" id="userMap">
+        <result property="userId" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="dogCoin" column="dog_coin"/>
+        <result property="totalMuscleNum" column="total_muscle_num"/>
+        <result property="residueMuscleNum" column="residue_muscle_num"/>
+        <result property="daysUseBrawn" column="days_use_brawn"/>
+        <result property="buyBrawnNum" column="buy_brawn_num"/>
+        <result property="isFreeNameEdit" column="is_free_name_edit"/>
+        <result property="isMusic" column="is_music"/>
+        <result property="isEffect" column="is_effect"/>
+        <result property="status" column="status"/>
+        <result property="language" column="language"/>
+        <result property="isSignIn" column="is_sign_in"/>
+        <result property="signInDayNum" column="sign_in_day_num"/>
+        <result property="buyDayNum" column="buy_day_num"/>
+        <result property="isTodayCheck" column="is_today_check"/>
+        <result property="isHaveUnread" column="is_have_unread"/>
+        <result property="logonCredentials" column="logon_credentials"/>
+        <result property="mapId" column="map_id"/>
+        <result property="openMapNum" column="open_map_num"/>
+        <result property="equipHideGrade" column="equip_hide_grade"/>
+        <result property="equipGnawGrade" column="equip_gnaw_grade"/>
+        <result property="equipSoundGrade" column="equip_sound_grade"/>
+        <result property="winNum" column="win_num"/>
+        <result property="registerTime" column="register_time"/>
+        <result property="registerIp" column="register_ip"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="lastLoginIp" column="last_login_ip"/>
+        <result property="nextBuyEquipTime" column="next_buy_equip_time"/>
+        <result property="lastResumeTime" column="last_resume_time"/>
+        <result property="openId" column="open_id"/>
+        <result property="address" column="address"/>
+        <result property="role" column="role"/>
+        <result property="roleNft" column="role_nft"/>
+    </resultMap>
+
+    <resultMap type="com.platform.entity.UserVo" id="userList">
+        <result property="userId" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="dogCoin" column="dog_coin"/>
+        <result property="totalMuscleNum" column="total_muscle_num"/>
+        <result property="residueMuscleNum" column="residue_muscle_num"/>
+        <result property="isMusic" column="is_music"/>
+        <result property="isEffect" column="is_effect"/>
+        <result property="status" column="status"/>
+        <result property="language" column="language"/>
+        <result property="address" column="address"/>
+    </resultMap>
+
+    <select id="queryObject" resultMap="userMap">
+		select * from oil_user where id = #{value}
+	</select>
+
+    <select id="queryByOpenId" resultMap="userMap">
+        select * from oil_user
+        where 1 = 1
+        <if test="openId != null">
+            and `open_id` = #{openId}
+        </if>
+    </select>
+
+    <select id="allUser" resultMap="userList">
+        select * from oil_user where 1 = 1
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.UserVo" useGeneratedKeys="true" keyProperty="userId">
+		insert into oil_user
+		(
+			`user_name`,
+			`user_avatar`,
+			`total_muscle_num`,
+            `residue_muscle_num`,
+            `logon_credentials`,
+			`register_time`,
+			`register_ip`,
+			`last_login_time`,
+            `last_login_ip`,
+            `open_id`,
+            `address`,
+            `role`,
+            `role_nft`
+		)
+		values
+		(
+			#{userName},
+			#{userAvatar},
+			#{totalMuscleNum},
+            #{residueMuscleNum},
+            #{logonCredentials},
+			#{registerTime},
+			#{registerIp},
+			#{lastLoginTime},
+            #{lastLoginIp},
+            #{openId},
+            #{address},
+            #{role},
+            #{roleNft}
+		)
+	</insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update oil_user
+        <set>
+            <if test="userName != null and userName != ''"> `user_name` = #{userName},</if>
+            <if test="language != null and language != ''"> `language` = #{language},</if>
+            <if test="isEffect != null and isEffect != ''"> `is_effect` = #{isEffect},</if>
+            <if test="isMusic != null and isMusic != ''"> `is_music` = #{isMusic},</if>
+            <if test="openMapNum != null and openMapNum != ''"> `open_map_num` = #{openMapNum},</if>
+            <if test="isHaveUnread != null and isHaveUnread != ''"> `is_have_unread` = #{isHaveUnread},</if>
+            <if test="mapId != null and mapId != ''"> `map_id` = #{mapId},</if>
+            <if test="buyBrawnNum != null"> `buy_brawn_num` = #{buyBrawnNum},</if>
+            <if test="daysUseBrawn != null"> `days_use_brawn` = #{daysUseBrawn},</if>
+            <if test="dogCoin > 0"> `dog_coin` = dog_coin + #{dogCoin},</if>
+            <if test="residueMuscleNum > 0">`residue_muscle_num` = residue_muscle_num + #{residueMuscleNum},</if>
+            <if test="isTodayCheck > 0">`is_today_check` = #{isTodayCheck},</if>
+            <if test="signInDayNum > 0">`sign_in_day_num` = sign_in_day_num + #{signInDayNum},</if>
+            <if test="lastLoginTime != null">`last_login_time` = #{lastLoginTime},</if>
+            <if test="nextBuyEquipTime != null">`next_buy_equip_time` = #{nextBuyEquipTime},</if>
+            <if test="lastLoginIp != null">`last_login_ip` = #{lastLoginIp},</if>
+            <if test="isFreeNameEdit != null">`is_free_name_edit` = #{isFreeNameEdit}</if>
+        </set>
+        where id = #{userId}
+    </update>
+
+    <update id="updateSignIn" parameterType="java.util.Map">
+        update oil_user
+        <set>
+            <if test="isSignIn != null"> `is_sign_in` = #{isSignIn},</if>
+            <if test="isTodayCheck != null">`is_today_check` = #{isTodayCheck},</if>
+            <if test="signInDayNum != null">`sign_in_day_num` = #{signInDayNum},</if>
+            <if test="buyDayNum != null">`buy_day_num` = #{buyDayNum}</if>
+        </set>
+        where id = #{userId}
+    </update>
+
+    <update id="countGameWinNum" parameterType="java.util.Map">
+        update oil_user
+        <set>
+            <if test="winNum > 0">`win_num` = win_num + #{winNum}</if>
+        </set>
+        where id = #{userId}
+    </update>
+
+    <update id="updateAccountInfo" parameterType="java.util.Map">
+        update oil_user
+        <set>
+            <if test="accountBonus != null and accountBonus >= 0">`account_bonus` = #{accountBonus},</if>
+            <if test="accountMoney != null and accountMoney >= 0">`account_money` = #{accountMoney},</if>
+            <if test="accumCashOutBalance != null and accumCashOutBalance >= 0">`accum_cash_out_balance` = #{accumCashOutBalance},</if>
+            <if test="accumCashOutIntegral != null and accumCashOutIntegral >= 0">`accum_cash_out_integral` = #{accumCashOutIntegral}</if>
+        </set>
+        where id = #{userId}
+    </update>
+
+    <!--    每日凌晨重置用户签到数据-->
+<!--    <update id="resettingSignIn">-->
+<!--        update oil_user set is_today_check = 0, days_use_brawn = 0, buy_brawn_num = 3 where 1 = 1-->
+<!--    </update>-->
+
+    <update id="resettingSignIn">
+        update oil_user set is_today_check = 0, days_use_brawn = 0 where 1 = 1
+    </update>
+
+    <!--    自动恢复体力-->
+    <update id="resumeBrawn" parameterType="java.util.Map">
+        update oil_user set residue_muscle_num = residue_muscle_num + 1 where 1 = 1 and total_muscle_num > residue_muscle_num
+    </update>
+
+    <!--    使用体力/减少体力-->
+    <update id="useBrawnNum">
+        update oil_user set residue_muscle_num = residue_muscle_num - #{brawnNum} where id = #{userId}
+    </update>
+
+    <!--    添加体力-->
+    <update id="addBrawnNum">
+        update oil_user set residue_muscle_num = residue_muscle_num + #{brawnNum} where id = #{userId}
+    </update>
+
+    <!--    使用狗币/代币-->
+    <update id="useDogCoinNum">
+        update oil_user set dog_coin = dog_coin - #{dogCoinNum} where id = #{userId}
+    </update>
+
+    <!--    增加狗币/代币-->
+    <update id="addDogCoinNum">
+        update oil_user set dog_coin = dog_coin + #{dogCoinNum} where id = #{userId}
+    </update>
+
+</mapper>

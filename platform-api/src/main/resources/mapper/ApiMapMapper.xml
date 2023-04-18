@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiMapMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.MapVo" id="mapMap">
+        <result property="id" column="id"/>
+        <result property="mapGrade" column="map_grade"/>
+        <result property="mapName" column="map_name"/>
+        <result property="imgName" column="img_name"/>
+        <result property="petRatio" column="pet_ratio"/>
+        <result property="equipRatio" column="equip_ratio"/>
+        <result property="gemRatio" column="gem_ratio"/>
+        <result property="forageRatio" column="forage_ratio"/>
+        <result property="wildRatio" column="wild_ratio"/>
+        <result property="attributeNum" column="attribute_num"/>
+        <result property="useBrawn" column="use_brawn"/>
+        <result property="useAgs" column="use_ags"/>
+        <result property="lockLevel" column="lock_level"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个地图详情-->
+    <select id="queryObject" resultMap="mapMap">
+		select * from config_map where id = #{value}
+	</select>
+
+    <!--分页查询地图列表-->
+    <select id="queryList" resultMap="mapMap">
+        select * from config_map where 1 = 1
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!--查询地图总数-->
+    <select id="queryTotal" resultType="int">
+		select count(1) from config_map where 1 = 1
+	</select>
+
+    <!--查询地图列表-->
+    <select id="allMap" resultMap="mapMap">
+        select * from config_map where 1 = 1
+    </select>
+</mapper>

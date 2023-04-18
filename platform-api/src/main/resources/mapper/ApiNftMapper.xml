@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiNftMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.NftVo" id="nftMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="nftId" column="nft_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="image" column="image"/>
+        <result property="jsonUrl" column="json_url"/>
+        <result property="attributes" column="attributes"/>
+        <result property="type" column="type"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="isDraw" column="is_draw"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个nft详情-->
+    <select id="queryObjectByUser" resultMap="nftMap">
+        select * from oil_nft where user_id = #{userId} and id = #{nftId}
+    </select>
+
+    <!--查询所有nft-->
+    <select id="allNft" resultMap="nftMap">
+        select * from oil_nft where 1 = 1
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.NftVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_nft
+        (
+            `id`,
+            `user_id`,
+            `nft_id`,
+            `name`,
+            `description`,
+            `image`,
+            `json_url`,
+            `attributes`,
+            `type`,
+            `create_time`
+        )
+        values
+        (
+            #{id},
+            #{userId},
+            #{nftId},
+            #{name},
+            #{description},
+            #{image},
+            #{jsonUrl},
+            #{attributes},
+            #{type},
+            #{createTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update oil_nft
+        <set>
+            <if test="userId != null and userId != ''"> `user_id` = #{userId},</if>
+            <if test="attributes != null and attributes != ''"> `attributes` = #{attributes},</if>
+            <if test="updateTime != null and updateTime != ''"> `update_time` = #{updateTime}</if>
+        </set>
+        where nft_id = #{nftId}
+    </update>
+
+    <delete id="delete">
+        delete from oil_nft where 1 = 1 and id = #{value}
+    </delete>
+
+    <delete id="deleteNftByNftId">
+        delete from oil_nft where 1 = 1 and id = #{nftId}
+    </delete>
+
+    <select id="queryTotal" resultType="int">
+        SELECT count(1) FROM oil_nft where type = #{type}
+    </select>
+
+</mapper>

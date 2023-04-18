@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiConfigDogMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.ConfigDogVo" id="dogMap">
+        <result property="id" column="id"/>
+        <result property="dogGrade" column="dog_grade"/>
+        <result property="dogName" column="dog_name"/>
+        <result property="animationName" column="animation_name"/>
+        <result property="dogDesc" column="dog_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="dogBreed" column="dog_breed"/>
+        <result property="initialFightingNum" column="initial_fighting_num"/>
+        <result property="growUpNum" column="grow_up_num"/>
+        <result property="inbornNum" column="inborn_num"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询配置表某个宠物详情-->
+    <select id="queryObject" resultMap="dogMap">
+        select * from config_dog where id = #{value}
+    </select>
+
+    <!--查询配置表某个宠物详情-->
+    <select id="queryObjectByGrade" resultMap="dogMap">
+        select * from config_dog where dog_grade = #{dogGrade}
+    </select>
+
+    <!--查询配置表所有宠物-->
+    <select id="allDog" resultMap="dogMap">
+        select * from config_dog where 1 = 1
+    </select>
+
+</mapper>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserDogMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserDogVo" id="userDogMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="dogId" column="dog_id"/>
+        <result property="dogGrade" column="dog_grade"/>
+        <result property="dogName" column="dog_name"/>
+        <result property="dogDesc" column="dog_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="animationName" column="animation_name"/>
+        <result property="dogBreed" column="dog_breed"/>
+        <result property="fightingNum" column="fighting_num"/>
+        <result property="speed" column="speed"/>
+        <result property="mood" column="mood"/>
+        <result property="endurance" column="endurance"/>
+        <result property="luck" column="luck"/>
+        <result property="maxGrowUpNum" column="max_grow_up_num"/>
+        <result property="currentGrowUpNum" column="current_grow_up_num"/>
+        <result property="inbornNum" column="inborn_num"/>
+        <result property="isUse" column="is_use"/>
+        <result property="isGame" column="is_game"/>
+        <result property="isNft" column="is_nft"/>
+        <result property="isDraw" column="is_draw"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="nftId" column="nft_id"/>
+        <result property="isCool" column="is_cool"/>
+        <result property="coolTime" column="cool_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="userDogMap">
+        SELECT * FROM oil_user_dog
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}, fighting_num desc
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        SELECT count(1) FROM oil_user_dog
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUserDogInfo" resultMap="userDogMap">
+        SELECT * FROM oil_user_dog
+        <where>
+            <if test="dogId != null">
+                and id = #{dogId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="isCool != null">
+                and is_cool = #{isCool}
+            </if>
+            <if test="isGame != null">
+                and is_game = #{isGame}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryAllListByUser" resultMap="userDogMap">
+        SELECT * FROM oil_user_dog where user_id = #{userId} order by is_cool asc, fighting_num desc
+    </select>
+
+    <select id="queryObjectByUser" resultMap="userDogMap">
+        SELECT * FROM oil_user_dog where user_id = #{userId} and id = #{dogId}
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        update oil_user_dog
+        <set>
+            <if test="dogGrade != null"> `dog_grade` = #{dogGrade},</if>
+            <if test="fightingNum != null">`fighting_num` = #{fightingNum},</if>
+            <if test="maxGrowUpNum != null">`max_grow_up_num` = #{maxGrowUpNum},</if>
+            <if test="currentGrowUpNum != null">`current_grow_up_num` = #{currentGrowUpNum},</if>
+            <if test="isUse != null">`is_use` = #{isUse},</if>
+            <if test="isGame != null">`is_game` = #{isGame},</if>
+            <if test="isCool != null">`is_cool` = #{isCool},</if>
+            <if test="coolTime != null">`cool_time` = #{coolTime},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{dogId}
+    </update>
+
+    <insert id="save" parameterType="com.platform.entity.UserDogVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_user_dog
+        (
+            `user_id`,
+            `dog_id`,
+            `dog_grade`,
+            `dog_name`,
+            `dog_desc`,
+            `img_name`,
+            `animation_name`,
+            `dog_breed`,
+            `fighting_num`,
+            `speed`,
+            `mood`,
+            `endurance`,
+            `luck`,
+            `max_grow_up_num`,
+            `inborn_num`,
+            `update_time`
+        )
+        values
+        (
+            #{userId},
+            #{dogId},
+            #{dogGrade},
+            #{dogName},
+            #{dogDesc},
+            #{imgName},
+            #{animationName},
+            #{dogBreed},
+            #{fightingNum},
+            #{speed},
+            #{mood},
+            #{endurance},
+            #{luck},
+            #{maxGrowUpNum},
+            #{inbornNum},
+            #{updateTime}
+        )
+    </insert>
+
+    <select id="allList" resultMap="userDogMap">
+        select * from oil_user_dog where 1 = 1 and user_id = #{userId} order by dog_breed desc,fighting_num desc
+    </select>
+
+    <update id="updateBatchIsUse">
+        update `oil_user_dog` set `is_use` = 0 where user_id = #{userId}
+    </update>
+
+    <update id="updateBatchById">
+        <foreach collection="updateMap" item="item" index="index" open="" close="" separator=";">
+            update
+            `oil_user_dog`
+            set
+            `is_game` = 0
+            where
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <select id="queryListByCool" resultMap="userDogMap">
+        select * from oil_user_dog where 1 = 1 and is_cool = #{isCool}
+    </select>
+
+    <update id="updateCoolStatus">
+        update oil_user_dog set `is_cool` = #{status} where id = #{dogId}
+    </update>
+
+    <delete id="deleteByUser">
+        delete from oil_user_dog where user_id = #{userId} and id = #{dogId}
+    </delete>
+
+    <update id="updateNFT" parameterType="java.util.Map">
+        update oil_user_dog
+        <set>
+            <if test="isNft != null">`is_nft` = #{isNft},</if>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="isFreeze != null">`is_freeze` = #{isFreeze},</if>
+            <if test="nftId != null">`nft_id` = #{nftId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+</mapper>

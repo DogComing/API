@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserPropMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserPropVo" id="propMap">
+        <result property="id" column="id"/>
+        <result property="propId" column="prop_id"/>
+        <result property="grade" column="grade"/>
+        <result property="userId" column="user_id"/>
+        <result property="propName" column="prop_name"/>
+        <result property="propDesc" column="prop_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="propType" column="prop_type"/>
+        <result property="useType" column="use_type"/>
+        <result property="attributeType" column="attribute_type"/>
+        <result property="propNum" column="prop_num"/>
+        <result property="isNft" column="is_nft"/>
+        <result property="isDraw" column="is_draw"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="nftId" column="nft_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个饲料详情-->
+    <select id="queryObject" resultMap="propMap">
+        select * from oil_user_prop where id = #{value}
+    </select>
+
+    <!--查询饲料列表-->
+    <select id="queryList" resultMap="propMap">
+        select * from oil_user_prop
+        <where>
+            <if test="propType != null">
+                AND prop_type = #{propType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by distance asc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!--查询饲料总数-->
+    <select id="queryTotal" resultType="int">
+        select count(1) from oil_user_prop
+        <where>
+            <if test="propType != null">
+                AND prop_type = #{propType}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryObjectByUser" resultMap="propMap">
+        select * from oil_user_prop where id = #{id} and user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.UserPropVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_user_prop
+        (
+            `prop_id`,
+            `grade`,
+            `user_id`,
+            `prop_name`,
+            `prop_desc`,
+            `img_name`,
+            `prop_type`,
+            `use_type`,
+            `attribute_type`,
+            `prop_num`,
+            `create_time`
+        )
+        values
+        (
+            #{propId},
+            #{grade},
+            #{userId},
+            #{propName},
+            #{propDesc},
+            #{imgName},
+            #{propType},
+            #{useType},
+            #{attributeType},
+            #{propNum},
+            #{createTime}
+        )
+    </insert>
+
+    <update id="receiveRewards" parameterType="java.util.Map">
+        update oil_user_prop
+        <set>
+            <if test="propNum >= 0">`prop_num` = prop_num + #{propNum}</if>
+        </set>
+        where prop_id = #{propId} and user_id = #{userId}
+    </update>
+
+    <select id="allList" resultMap="propMap">
+        select * from oil_user_prop where 1 = 1 and prop_num > 0 and user_id = #{userId}
+    </select>
+
+    <select id="queryListByMap" resultMap="propMap">
+        select * from oil_user_prop where 1 = 1 and prop_num > 0
+        <if test="propType != null">
+            and `prop_type` = #{propType}
+        </if>
+        <if test="useType != null">
+            and `use_type` = #{useType}
+        </if>
+        <if test="userId != null">
+            and `user_id` = #{userId}
+        </if>
+    </select>
+
+    <update id="makeUseOf" parameterType="java.util.Map">
+        update oil_user_prop
+        <set>
+            <if test="useNum >= 0">`prop_num` = prop_num - #{useNum}</if>
+        </set>
+        where id = #{id} and user_id = #{userId} and prop_num > 0
+    </update>
+
+    <update id="updateNFT" parameterType="java.util.Map">
+        update oil_user_prop
+        <set>
+            <if test="isNft != null">`is_nft` = #{isNft},</if>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="isFreeze != null">`is_freeze` = #{isFreeze},</if>
+            <if test="nftId != null">`nft_id` = #{nftId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+    <delete id="deleteByUser">
+        delete from oil_user_prop where user_id = #{userId} and id = #{id}
+    </delete>
+
+</mapper>

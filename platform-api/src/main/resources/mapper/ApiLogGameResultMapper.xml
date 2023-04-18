@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiLogGameResultMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.LogGameResultVo" id="logMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="gameNum" column="game_num"/>
+        <result property="dogNumber" column="dog_number"/>
+        <result property="ranking" column="ranking"/>
+        <result property="isReal" column="is_real"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="logMap">
+        SELECT * FROM log_game_result where game_num = #{gameNum}
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.LogGameResultVo">
+        insert into log_game_result
+        (
+            `user_id`,
+            `game_num`,
+            `dog_number`,
+            `ranking`,
+            `is_real`,
+            `create_time`
+        )
+        values
+        (
+            #{userId},
+            #{gameNum},
+            #{dogNumber},
+            #{ranking},
+            #{isReal},
+            #{createTime}
+        )
+    </insert>
+
+    <select id="queryListByGameNum" resultMap="logMap">
+        SELECT * FROM log_game_result where game_num = #{gameNum}
+    </select>
+
+</mapper>

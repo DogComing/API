@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiLogASGMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.LogASGVo" id="logMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="num" column="num"/>
+        <result property="logType" column="log_type"/>
+        <result property="asgType" column="asg_type"/>
+        <result property="logTypeTxt" column="log_type_txt"/>
+        <result property="agsTypeTxt" column="ags_type_txt"/>
+        <result property="remarks" column="remarks"/>
+        <result property="address" column="address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个记录详情-->
+    <select id="queryObjectByUser" resultMap="logMap">
+        select * from log_asg where user_id = #{userId} and id = #{logId}
+    </select>
+
+    <select id="queryObjectByType" resultMap="logMap">
+        select * from log_asg where log_type = 3 and asg_type = 1 and user_id = #{userId} and DATE_FORMAT(create_time, '%Y-%m-%d') = #{day}
+    </select>
+
+    <!--查询所有记录-->
+    <select id="allLog" resultMap="logMap">
+        select * from log_asg where 1 = 1
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.LogASGVo" useGeneratedKeys="true" keyProperty="id">
+        insert into log_asg
+        (
+            `id`,
+            `user_id`,
+            `num`,
+            `log_type`,
+            `asg_type`,
+            `log_type_txt`,
+            `ags_type_txt`,
+            `remarks`,
+            `address`,
+            `create_time`
+        )
+        values
+        (
+            #{id},
+            #{userId},
+            #{num},
+            #{logType},
+            #{asgType},
+            #{logTypeTxt},
+            #{agsTypeTxt},
+            #{remarks},
+            #{address},
+            #{createTime}
+        )
+    </insert>
+
+    <delete id="deleteAllLog">
+        delete from log_asg where 1 = 1
+    </delete>
+
+</mapper>

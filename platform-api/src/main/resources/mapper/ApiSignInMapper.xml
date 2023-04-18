@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiSignInMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.SignInVo" id="signInMap">
+        <result property="id" column="id"/>
+        <result property="day" column="day"/>
+        <result property="content" column="content"/>
+        <result property="imgName" column="img_name"/>
+        <result property="awardNum" column="award_num"/>
+        <result property="isAttribute" column="is_attribute"/>
+        <result property="awardType" column="award_type"/>
+        <result property="kindId" column="kind_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="queryAllList" resultMap="signInMap">
+        select * from oil_sign_in where 1 = 1
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.SignInVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_sign_in
+        (
+            `day`,
+            `content`,
+            `award_num`,
+            `is_attribute`,
+            `award_type`,
+            `kind_id`,
+            `create_time`
+        )
+        values
+        (
+            #{day},
+            #{content},
+            #{awardNum},
+            #{isAttribute},
+            #{awardType},
+            #{kindId},
+            #{createTime}
+        )
+    </insert>
+
+</mapper>

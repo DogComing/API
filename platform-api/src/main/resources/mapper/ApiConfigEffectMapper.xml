@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiConfigEffectMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.ConfigEffectVo" id="effectMap">
+        <result property="id" column="id"/>
+        <result property="effectDesc" column="effect_desc"/>
+        <result property="fightingNum" column="fighting_num"/>
+        <result property="muscleNum" column="muscle_num"/>
+        <result property="gemOdds" column="gem_odds"/>
+        <result property="addMuscleOdds" column="add_muscle_odds"/>
+        <result property="ratio" column="ratio"/>
+        <result property="type" column="type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询配置表额外奖励详情-->
+    <select id="queryObject" resultMap="effectMap">
+        select * from config_effect where id = #{value}
+    </select>
+
+    <!--查询配置表所有额外奖励-->
+    <select id="allEffect" resultMap="effectMap">
+        select * from config_effect where 1 = 1
+    </select>
+
+</mapper>

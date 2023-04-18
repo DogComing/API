@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserFightEquipMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserFightEquipVo" id="fightMap">
+        <result property="id" column="id"/>
+        <result property="fightId" column="fight_id"/>
+        <result property="grade" column="grade"/>
+        <result property="userId" column="user_id"/>
+        <result property="fightName" column="fight_name"/>
+        <result property="fightDesc" column="fight_desc"/>
+        <result property="imgName" column="img_name"/>
+        <result property="fightingAddition" column="fighting_addition"/>
+        <result property="isGem" column="is_gem"/>
+        <result property="fightNum" column="fight_num"/>
+        <result property="isNft" column="is_nft"/>
+        <result property="isDraw" column="is_draw"/>
+        <result property="isFreeze" column="is_freeze"/>
+        <result property="nftId" column="nft_id"/>
+        <result property="durabilityMax" column="durability_max"/>
+        <result property="durabilityResidue" column="durability_residue"/>
+        <result property="fightType" column="fight_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个对战装备详情-->
+    <select id="queryObject" resultMap="fightMap">
+        select * from oil_user_fight_equip where id = #{value}
+    </select>
+
+    <!--查询所有对战道具-->
+    <select id="allFightEquip" resultMap="fightMap">
+        select * from oil_user_fight_equip where 1 = 1
+    </select>
+
+    <select id="queryObjectByUser" resultMap="fightMap">
+        select * from oil_user_fight_equip where id = #{id} and user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.UserFightEquipVo" useGeneratedKeys="true" keyProperty="id">
+        insert into oil_user_fight_equip
+        (
+            `fight_id`,
+            `grade`,
+            `user_id`,
+            `fight_name`,
+            `fight_desc`,
+            `img_name`,
+            `fighting_addition`,
+            `is_gem`,
+            `fight_num`,
+            `durability_max`,
+            `durability_residue`,
+            `fight_type`,
+            `create_time`
+        )
+        values
+        (
+            #{fightId},
+            #{grade},
+            #{userId},
+            #{fightName},
+            #{fightDesc},
+            #{imgName},
+            #{fightingAddition},
+            #{isGem},
+            #{fightNum},
+            #{durabilityMax},
+            #{durabilityResidue},
+            #{fightType},
+            #{createTime}
+        )
+    </insert>
+
+    <update id="receiveRewards" parameterType="java.util.Map">
+        update oil_user_fight_equip
+        <set>
+            <if test="fightNum >= 0">`fight_num` = fight_num + #{fightNum}</if>
+        </set>
+        where fight_id = #{fightId} and user_id = #{userId}
+    </update>
+
+    <select id="allList" resultMap="fightMap">
+        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and user_id = #{userId} order by grade desc,durability_residue desc
+    </select>
+
+    <select id="queryListByMap" resultMap="fightMap">
+        select * from oil_user_fight_equip
+        where 1 = 1 and fight_num > 0
+        <if test="isGem != null">
+            and `is_gem` = #{isGem}
+        </if>
+        <if test="userId != null">
+            and `user_id` = #{userId}
+        </if>
+    </select>
+
+    <update id="updateNFT" parameterType="java.util.Map">
+        update oil_user_fight_equip
+        <set>
+            <if test="isNft != null">`is_nft` = #{isNft},</if>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="isFreeze != null">`is_freeze` = #{isFreeze},</if>
+            <if test="nftId != null">`nft_id` = #{nftId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+    <update id="makeUseOf" parameterType="java.util.Map">
+        update oil_user_fight_equip
+        <set>
+            <if test="useNum >= 0">`durability_residue` = durability_residue - #{useNum}</if>
+        </set>
+        where id = #{id} and user_id = #{userId} and durability_residue > 0
+    </update>
+
+    <delete id="deleteByUser">
+        delete from oil_user_fight_equip where user_id = #{userId} and id = #{id}
+    </delete>
+
+</mapper>

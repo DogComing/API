@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiSupportRecordMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.SupportRecordVo" id="recordMap">
+        <result property="id" column="id"/>
+        <result property="gameNum" column="game_num"/>
+        <result property="userName" column="user_name"/>
+        <result property="userId" column="user_id"/>
+        <result property="stakeType" column="stake_type"/>
+        <result property="selectType" column="select_type"/>
+        <result property="dogNum" column="dog_num"/>
+        <result property="trackNum" column="track_num"/>
+        <result property="pourNum" column="pour_num"/>
+        <result property="odds" column="odds"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--查询某个押注记录详情-->
+    <select id="queryObject" resultMap="recordMap">
+        select * from oil_support_record where id = #{value}
+    </select>
+
+    <!--查询某局所有押注记录-->
+    <select id="recordByGameNum" resultMap="recordMap">
+        select * from oil_support_record where 1 = 1 and game_num = #{gameNum} and user_id = #{userId}
+    </select>
+
+    <select id="queryListByGameNum" resultMap="recordMap">
+        select * from oil_support_record where 1 = 1 and game_num = #{gameNum}
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.SupportRecordVo">
+        insert into oil_support_record
+        (
+            `game_num`,
+            `user_name`,
+            `user_id`,
+            `stake_type`,
+            `select_type`,
+            `dog_num`,
+            `track_num`,
+            `pour_num`,
+            `odds`,
+            `create_time`
+        )
+        values
+        (
+            #{gameNum},
+            #{userName},
+            #{userId},
+            #{stakeType},
+            #{selectType},
+            #{dogNum},
+            #{trackNum},
+            #{pourNum},
+            #{odds},
+            #{createTime}
+        )
+    </insert>
+
+</mapper>
