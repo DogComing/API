@@ -12,11 +12,6 @@
 		<result property="remark" column="remark"/>
 	</resultMap>
 
-	<!-- 查询平台客服以及银行卡信息 -->
-	<select id="queryService" resultMap="configMap">
-		select * from config where id > 104 and status = 1
-	</select>
-
     <!-- 根据key，查询value -->
     <select id="queryByStringKey" parameterType="string" resultType="string">
 		select value from config where `key` = #{key}

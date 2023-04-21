@@ -4,7 +4,6 @@ import com.platform.entity.ConfigVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,12 +14,6 @@ import java.util.Map;
  **/
 @Mapper
 public interface ApiConfigMapper extends BaseDao<ConfigVo>{
-
-    /**
-     * 查询平台客服以及银行卡信息
-     * @return
-     */
-    List<ConfigVo> queryService();
 
     /**
      * 查询某个String值
@@ -36,6 +29,11 @@ public interface ApiConfigMapper extends BaseDao<ConfigVo>{
      */
     Integer queryByIntKey(String key);
 
+    /**
+     * 查询某个BigDecimal值
+     * @param key
+     * @return
+     */
     BigDecimal queryByBigDecimalKey(String key);
 
     /**

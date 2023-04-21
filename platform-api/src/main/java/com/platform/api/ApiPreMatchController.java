@@ -21,11 +21,8 @@ import java.util.Map;
 import static com.platform.config.ConstantConfig.*;
 
 /**
- * @program: platform
- * @description: 比赛预匹配
- * @author: Yuan
- * @create: 2020-08-13 17:34
- **/
+ * 比赛预匹配
+ */
 @Api(tags = "比赛预匹配")
 @RestController
 @RequestMapping("/api/mate")
@@ -41,13 +38,24 @@ public class ApiPreMatchController extends ApiBaseAction {
     private ApiUserPropService userPropService;
     @Autowired
     private ApiUserWildService userWildService;
+    @Autowired
+    private ApiConfigService configService;
 
-    /***
-     * @Description: 报名比赛
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 报名比赛
+     * @param loginUser
+     * @param dogId 狗狗Id
+     * @param equipOne 装备1
+     * @param equipTwo 装备2
+     * @param equipThree 装备3
+     * @param equipType01 装备1类型
+     * @param equipType02 装备2类型
+     * @param equipType03 装备3类型
+     * @param brawn 体力卡
+     * @param gameCard 参赛卡
+     * @param fight 战力提升卡
+     * @param cool 冷却卡
+     * @return
      */
     @ApiOperation(value = "报名比赛")
     @PostMapping("enroll")
@@ -109,21 +117,24 @@ public class ApiPreMatchController extends ApiBaseAction {
             userPropService.makeUseOf(loginUser.getUserId(), cool, 1);
         }
 
-        if (brawn == 0){
+        Integer brawnNum = configService.queryByIntKey("game_reduce_brawn");
+        Integer asg = configService.queryByIntKey("game_reduce_asg");
+
+        if (brawn == 0 && brawnNum > 0){
             // 减少用户身上对应体力数值
-            if (loginUser.getResidueMuscleNum() < 5) return toResponsObject(1,"亲～您的体力不足", null);
-            userService.useBrawnNum(loginUser.getUserId(), 5); // 扣除用户体力
+            if (loginUser.getResidueMuscleNum() < brawnNum) return toResponsObject(400,"亲～您的体力不足", null);
+            userService.useBrawnNum(loginUser.getUserId(), brawnNum); // 扣除用户体力
 
             Map userMap = new HashMap();
-            userMap.put("daysUseBrawn", loginUser.getDaysUseBrawn() + 5);
+            userMap.put("daysUseBrawn", loginUser.getDaysUseBrawn() + brawnNum);
             userMap.put("userId", loginUser.getUserId());
             userService.update(userMap);
         }
 
-        if (gameCard == 0){
+        if (gameCard == 0 && asg > 0){
             // 减少用户身上对应狗币/代币数值
-            if (loginUser.getDogCoin() < 1000) return toResponsObject(1,"亲～您的ASG不足", null);
-            userService.useDogCoinNum(loginUser.getUserId(), 1000); // 扣除用户AGS
+            if (loginUser.getDogCoin() < asg) return toResponsObject(400,"亲～您的ASG不足", null);
+            userService.useDogCoinNum(loginUser.getUserId(), asg); // 扣除用户AGS
         }
 
         // 增加装备战斗力
@@ -192,12 +203,11 @@ public class ApiPreMatchController extends ApiBaseAction {
         return toResponsSuccess(true);
     }
 
-    /***
-     * @Description: 取消报名
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 取消报名
+     * @param loginUser 用户信息
+     * @param dogId 狗狗Id
+     * @return
      */
     @ApiOperation(value = "取消报名")
     @PostMapping("cancel")
@@ -233,11 +243,14 @@ public class ApiPreMatchController extends ApiBaseAction {
 
         if (isHave == false) return toResponsObject(400,"取消报名失败！", null);
 
+        Integer brawnNum = configService.queryByIntKey("game_reduce_brawn");
+        Integer asg = configService.queryByIntKey("game_reduce_asg");
+
         // 返还用户体力
-        userService.addBrawnNum(loginUser.getUserId(), 5);
+        if (brawnNum > 0) userService.addBrawnNum(loginUser.getUserId(), brawnNum);
 
         // 返还用户ASG
-        userService.addDogCoinNum(loginUser.getUserId(), 1000);
+        if (asg > 0) userService.addDogCoinNum(loginUser.getUserId(), asg);
 
         Map map = new HashMap();
         map.put("dogId", userDogVo.getId());

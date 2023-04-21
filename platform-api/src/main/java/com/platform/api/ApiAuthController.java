@@ -28,11 +28,7 @@ import java.util.Map;
 import static com.platform.config.ConstantConfig.*;
 
 /**
- * A登录授权接口
- *
- * @author xingGuangTeam
- * @email 249893127@qq.com
- * @date 2019-03-23 15:31
+ * 登录授权接口
  */
 @Api(tags = "登录授权接口")
 @RestController
@@ -46,6 +42,8 @@ public class ApiAuthController extends ApiBaseAction {
 
     /**
      * 用户扫码授权接口
+     * @param loginInfo
+     * @return
      */
     @IgnoreAuth
     @PostMapping("auth")
@@ -122,6 +120,8 @@ public class ApiAuthController extends ApiBaseAction {
 
     /**
      * 用户快速登录
+     * @param loginInfo
+     * @return
      */
     @IgnoreAuth
     @PostMapping("login")

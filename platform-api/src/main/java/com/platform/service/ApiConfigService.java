@@ -1,12 +1,10 @@
 package com.platform.service;
 
 import com.platform.dao.ApiConfigMapper;
-import com.platform.entity.ConfigVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,8 +18,6 @@ public class ApiConfigService {
 
     @Autowired
     private ApiConfigMapper configMapper;
-
-    public List<ConfigVo> queryService() { return configMapper.queryService(); }
 
     public String queryByStringKey(String key) { return configMapper.queryByStringKey(key); }
 

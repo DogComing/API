@@ -6,6 +6,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.SerializationUtils;
 import com.platform.entity.*;
 import com.platform.service.*;
 import com.platform.util.CollectorsUtils;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -301,6 +303,9 @@ public class ScheduledTask {
             failList.addAll(matchList);
             matchSecondsCurrent = 0;
 
+            Integer brawnNum = configService.queryByIntKey("game_reduce_brawn");
+            Integer asg = configService.queryByIntKey("game_reduce_asg");
+
             // 返还报名费用到邮箱
             for (int i = 0; i < matchList.size(); i++){
                 // 判断是否人机狗狗
@@ -309,12 +314,18 @@ public class ScheduledTask {
                     MailVo mailVo = new MailVo();
                     mailVo.setType(2);
                     mailVo.setMailTitle("匹配失败返还报名费");
-                    mailVo.setMailContent("匹配失败返还报名费：" + 1000);
+                    mailVo.setMailContent("匹配失败返还报名费：" + asg);
                     mailVo.setAwardType(1);
-                    mailVo.setBrawnNum(5);
-                    mailVo.setImgName("jinbi,jingli");
-                    mailVo.setGameAward(1000 + "," + 5);
-                    mailVo.setAwardNum(1000);
+                    if (brawnNum > 0) mailVo.setBrawnNum(brawnNum);
+                    if (brawnNum > 0 && asg > 0){
+                        mailVo.setImgName("jinbi,jingli");
+                        mailVo.setGameAward(asg + "," + brawnNum);
+                    }
+                    if (brawnNum <= 0 && asg > 0){
+                        mailVo.setImgName("jinbi");
+                        mailVo.setGameAward(asg.toString());
+                    }
+                    mailVo.setAwardNum(asg);
                     mailVo.setIsAttribute(0);
                     mailVo.setIsReceive(0);
                     mailVo.setUserId(matchList.get(i).getUserId());
@@ -563,249 +574,6 @@ public class ScheduledTask {
     }
 
     /**
-     * 比赛结束 系统返还 精力、AGS
-     */
-    public void sendMail(){
-
-        try {
-            // 查询比赛结果 并且按 名次排列赛道号顺序
-            List<LogGameResultVo> gameResultList = logGameResultService.queryListByGameNum(currentGameNum);
-            gameResultList.sort(Comparator.comparing(LogGameResultVo::getRanking));
-            String dogNumStr = "";
-            for (int i = 0; i < gameResultList.size(); i++){
-                if (gameResultList.size() - 1 == i) {
-                    dogNumStr += gameResultList.get(i).getDogNumber();
-                    break;
-                }
-                dogNumStr += gameResultList.get(i).getDogNumber() + ">";
-            }
-
-//            List<List<LogAwardVo>> userLog = new ArrayList<>();
-//            List<LogAwardVo> logList = null;
-//            List<LogAwardVo> logAwardList = logAwardService.queryListByGameNum(currentGameNum);
-//            for (int i = 0; i < currentList.size(); i++){
-//                logList = new ArrayList<>();
-//                for (int j = 0; j < logAwardList.size(); j++){
-//                    if (logAwardList.get(j).getUserId().equals(currentList.get(i).getUserId())){
-//                        logList.add(logAwardList.get(j));
-//                    }
-//                }
-//                userLog.add(logList);
-//            }
-
-
-//            String showStr = "";
-//            String mailStr01 = "";
-//            String mailStr02 = "";
-//            String mailStr03 = "";
-//            String kong01 = "\n-------------战况摘要------------\n\n";
-//            String kong02 = "\n-------------赞助记录------------\n\n";
-//            String duStr = "";
-//            String mingStr = "";
-//            String baoStr = "";
-//            Long userId = null;
-//            BigDecimal sum = BigDecimal.ZERO;
-//            if (jackpot.compareTo(BigDecimal.ZERO) == 1){
-//                for (int i = 0; i < userLog.size(); i++){
-//                    sum = BigDecimal.ZERO;
-//                    for (int j = 0; j < userLog.get(i).size(); j++){
-//                        if (userLog.get(i).get(j).getStakeType() == 1){ // 单压
-//                            duStr += "独赢：" + userLog.get(i).get(j).getMoney() + " ASG = " + userLog.get(i).get(j).getOdds() + " x " + userLog.get(i).get(j).getPourNum() + "注 x （" + userLog.get(i).get(j).getDogNum() + "）\n";
-//                        } else if (userLog.get(i).get(j).getStakeType() == 2){ // 名次
-//                            mingStr += "名次" + userLog.get(i).get(j).getSelectType() + "：" + userLog.get(i).get(j).getMoney() + " ASG = " + userLog.get(i).get(j).getOdds() + " x " + userLog.get(i).get(j).getPourNum() + "注 x（" + userLog.get(i).get(j).getDogNum() + "）\n";
-//                        } else if (userLog.get(i).get(j).getStakeType() == 3){ // 包围
-//                            baoStr += "包围" + userLog.get(i).get(j).getSelectType() + "：" + userLog.get(i).get(j).getMoney() + " ASG = " + userLog.get(i).get(j).getOdds() + " x " + userLog.get(i).get(j).getPourNum() + "注 x（" + userLog.get(i).get(j).getDogNum() + "）\n";
-//                        }
-//                        sum = sum.add(userLog.get(i).get(j).getMoney());
-//                        userId = userLog.get(i).get(j).getUserId();
-//                    }
-//
-//                    if (sum.compareTo(BigDecimal.ZERO) == 1){
-//                        mailStr01 = "恭喜您获得奖励： " + sum + " ASG\n";
-//                        mailStr02 = "场次号:<color='#B73600'>No." + currentGameNum + "</color>\n";
-//                        mailStr03 = "名次:<color='#B73600'>" + dogNumStr + "</color>\n";
-//
-//                        showStr = mailStr01 + kong01 + mailStr02 + mailStr03 + kong02 + duStr + mingStr + baoStr;
-//
-//                        MailVo mailVo = new MailVo();
-//                        mailVo.setMailTitle("赞助成功！");
-//                        mailVo.setMailContent(showStr);
-//                        mailVo.setAwardNum(sum.intValue());
-//                        mailVo.setIsAttribute(0);
-//                        mailVo.setAwardType(1); // 代币
-//                        mailVo.setType(2);
-//                        mailVo.setImgName("jinbi");
-//                        mailVo.setUserId(userId);
-//                        mailVo.setCreateTime(new Date());
-//                        mailService.save(mailVo);
-//
-//                        Map map = new HashMap();
-//                        map.put("userId", userId);
-//                        map.put("isHaveUnread", 1);
-//                        userService.update(map);
-//                    }
-//                }
-//            }
-
-            List<LogAwardVo> logList = null;
-            List<LogAwardVo> logAwardList = logAwardService.queryListByGameNum(currentGameNum);
-            Map<Long, List<LogAwardVo>> userMap = new HashMap();
-            for (LogAwardVo logAwardVo: logAwardList) {
-                if (!userMap.containsKey(logAwardVo.getUserId())) {
-                    logList = new ArrayList<>();
-                } else {
-                    logList = userMap.get(logAwardVo.getUserId());
-                }
-                logList.add(logAwardVo);
-                userMap.put(logAwardVo.getUserId(), logList);
-            }
-
-            String showStr = "";
-            String mailStr01 = "";
-            String mailStr02 = "";
-            String mailStr03 = "";
-            String kong01 = "\n-------------战况摘要------------\n\n";
-            String kong02 = "\n-------------赞助记录------------\n\n";
-            String duStr = "";
-            String mingStr = "";
-            String baoStr = "";
-            Long userId = null;
-            BigDecimal sum = BigDecimal.ZERO;
-            if (jackpot.compareTo(BigDecimal.ZERO) == 1){
-
-                for (Map.Entry<Long, List<LogAwardVo>> entry : userMap.entrySet()) {
-                    Long mapKey = entry.getKey();
-                    List<LogAwardVo> mapValue = entry.getValue();
-                    System.out.println("赞助用户：" + mapKey + " == " + mapValue);
-
-                    duStr = "";
-                    mingStr = "";
-                    baoStr = "";
-                    sum = BigDecimal.ZERO;
-                    for (int j = 0; j < mapValue.size(); j++){
-                        if (mapValue.get(j).getStakeType() == 1){ // 单压
-                            duStr += "独赢：" + mapValue.get(j).getMoney() + " ASG = " + mapValue.get(j).getOdds() + " x " + mapValue.get(j).getPourNum() + "注 x （" + mapValue.get(j).getDogNum() + "）\n";
-                        } else if (mapValue.get(j).getStakeType() == 2){ // 名次
-                            mingStr += "名次" + mapValue.get(j).getSelectType() + "：" + mapValue.get(j).getMoney() + " ASG = " + mapValue.get(j).getOdds() + " x " + mapValue.get(j).getPourNum() + "注 x（" + mapValue.get(j).getDogNum() + "）\n";
-                        } else if (mapValue.get(j).getStakeType() == 3){ // 包围
-                            baoStr += "包围" + mapValue.get(j).getSelectType() + "：" + mapValue.get(j).getMoney() + " ASG = " + mapValue.get(j).getOdds() + " x " + mapValue.get(j).getPourNum() + "注 x（" + mapValue.get(j).getDogNum() + "）\n";
-                        }
-                        sum = sum.add(mapValue.get(j).getMoney());
-                        userId = mapValue.get(j).getUserId();
-
-                        mailStr01 = "恭喜您获得奖励： " + sum + " ASG\n";
-                        mailStr02 = "场次号:<color='#B73600'>No." + currentGameNum + "</color>\n";
-                        mailStr03 = "名次:<color='#B73600'>" + dogNumStr + "</color>\n";
-
-                        showStr = mailStr01 + kong01 + mailStr02 + mailStr03 + kong02 + duStr + mingStr + baoStr;
-                    }
-
-                    MailVo mailVo = new MailVo();
-                    mailVo.setMailTitle("赞助成功！");
-                    mailVo.setMailContent(showStr);
-                    mailVo.setAwardNum(sum.intValue());
-                    mailVo.setIsAttribute(0);
-                    mailVo.setAwardType(1); // 代币
-                    mailVo.setType(2);
-                    mailVo.setImgName("jinbi");
-                    mailVo.setUserId(userId);
-                    mailVo.setCreateTime(new Date());
-                    if (sum.compareTo(BigDecimal.ZERO) == 1){
-                        mailVo.setIsReceive(0);
-                    } else {
-                        mailVo.setIsReceive(1);
-                    }
-                    mailService.save(mailVo);
-
-                    Map map = new HashMap();
-                    map.put("userId", userId);
-                    map.put("isHaveUnread", 1);
-                    userService.update(map);
-                }
-            }
-
-            for (int j = 0; j < currentList.size(); j++){
-
-                DecimalFormat decimalFormat = new DecimalFormat("00");
-                String numFormat = decimalFormat.format(currentList.get(j).getRanking());
-                BigDecimal innerRatio = configService.queryByBigDecimalKey("inner_ranking_" + numFormat);
-                BigDecimal outRatio = configService.queryByBigDecimalKey("out_ranking_" + numFormat);
-                Integer brawnNum = configService.queryByIntKey("brawn_ranking_" + numFormat);
-                BigDecimal sum2 = innerRatio.multiply(new BigDecimal(6000));
-                BigDecimal sum1 = outRatio.multiply(new BigDecimal(currentBetTotal));
-                BigDecimal sum3 = sum1.add(sum2);
-
-                // 排除人机狗狗
-                if (currentList.get(j).getId() > 0){
-
-                    mailStr02 = "场次号:<color='#B73600'>No." + currentGameNum + "</color>\n";
-                    mailStr03 = "名次:<color='#B73600'>" + dogNumStr + "</color>\n";
-
-                    if (sum3.compareTo(BigDecimal.ZERO) == 1 || brawnNum > 0){
-
-                        if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) == 1){
-                            mailStr01 = "恭喜您获得奖励： " + sum3 + " ASG + " + brawnNum + " 体力值\n";
-                        } else {
-                            if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) <= 0) {
-                                mailStr01 = "恭喜您获得奖励： " + brawnNum + " 体力值\n";
-                            } else if (sum3.compareTo(BigDecimal.ZERO) == 1 && brawnNum <= 0) {
-                                mailStr01 = "恭喜您获得奖励： " + sum3 + " ASG\n";
-                            }
-                        }
-
-                        showStr = mailStr01 + kong01 + mailStr02 + mailStr03;
-
-                        MailVo mailVo = new MailVo();
-                        mailVo.setMailTitle("参赛结果！");
-                        mailVo.setMailContent(showStr);
-                        mailVo.setAwardNum(sum3.intValue());
-                        mailVo.setIsAttribute(0);
-                        mailVo.setAwardType(1); // 代币
-                        mailVo.setType(2);
-                        mailVo.setIsReceive(0);
-                        if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) == 1){
-                            mailVo.setBrawnNum(brawnNum);
-                            mailVo.setImgName("jinbi,jingli");
-                            mailVo.setGameAward(sum1.add(sum2) + "," + brawnNum);
-                        } else {
-                            if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) <= 0){
-                                mailVo.setImgName("jingli");
-                                mailVo.setBrawnNum(brawnNum);
-                                mailVo.setGameAward(brawnNum.toString());
-                            } else if (sum3.compareTo(BigDecimal.ZERO) == 1 && brawnNum <= 0) {
-                                mailVo.setImgName("jinbi");
-                                mailVo.setGameAward(sum1.add(sum2).toString());
-                            }
-                        }
-                        mailVo.setUserId(currentList.get(j).getUserId());
-                        mailVo.setCreateTime(new Date());
-                        mailService.save(mailVo);
-                    } else {
-                        showStr = "很遗憾您的狗狗未能入围！" + kong01 + mailStr02 + mailStr03;
-                        MailVo mailVo = new MailVo();
-                        mailVo.setMailTitle("参赛结果！");
-                        mailVo.setMailContent(showStr);
-                        mailVo.setAwardNum(0);
-                        mailVo.setIsAttribute(0);
-                        mailVo.setAwardType(1); // 代币
-                        mailVo.setType(2);
-                        mailVo.setIsReceive(1);
-                        mailVo.setBrawnNum(0);
-                        mailVo.setImgName("");
-                        mailVo.setGameAward("");
-                        mailVo.setUserId(currentList.get(j).getUserId());
-                        mailVo.setCreateTime(new Date());
-                        mailService.save(mailVo);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * 结算赞助奖励
      */
     private void settleAccounts(){
@@ -915,7 +683,8 @@ public class ScheduledTask {
 
                     if(supportRecordVos.get(j).getSelectType() == 2){
                         // 本场比赛前两名
-                        List<Integer> subList = dogNumList.subList(0, 2);
+                        List<Integer> tempList = (List<Integer>) SerializationUtils.clone((Serializable) dogNumList);
+                        List<Integer> subList = tempList.subList(0, 2);
                         // 从小到大排序
                         Collections.sort(subList);
                         Collections.sort(trackNum);
@@ -930,7 +699,8 @@ public class ScheduledTask {
 
                     if(supportRecordVos.get(j).getSelectType() == 3){
                         // 本场比赛前三名
-                        List<Integer> subList = dogNumList.subList(0, 3);
+                        List<Integer> tempList = (List<Integer>) SerializationUtils.clone((Serializable) dogNumList);
+                        List<Integer> subList = tempList.subList(0, 3);
                         // 从小到大排序
                         Collections.sort(subList);
                         Collections.sort(trackNum);
@@ -945,7 +715,8 @@ public class ScheduledTask {
 
                     if(supportRecordVos.get(j).getSelectType() == 4){
                         // 本场比赛前四名
-                        List<Integer> subList = dogNumList.subList(0, 4);
+                        List<Integer> tempList = (List<Integer>) SerializationUtils.clone((Serializable) dogNumList);
+                        List<Integer> subList = tempList.subList(0, 4);
                         // 从小到大排序
                         Collections.sort(subList);
                         Collections.sort(trackNum);
@@ -1008,6 +779,186 @@ public class ScheduledTask {
             System.out.println("本场下注总金额：" + currentBetTotal);
             System.out.println("本场比赛玩家押注赢得总金额：" + currentWinTotal);
             System.out.println("本场比参赛玩家赢得场外奖池总金额：" + joinWinTotal);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 比赛结束 系统返还 精力、AGS
+     */
+    public void sendMail(){
+
+        try {
+            // 查询比赛结果 并且按 名次排列赛道号顺序
+            List<LogGameResultVo> gameResultList = logGameResultService.queryListByGameNum(currentGameNum);
+            gameResultList.sort(Comparator.comparing(LogGameResultVo::getRanking));
+            String dogNumStr = "";
+            for (int i = 0; i < gameResultList.size(); i++){
+                if (gameResultList.size() - 1 == i) {
+                    dogNumStr += gameResultList.get(i).getDogNumber();
+                    break;
+                }
+                dogNumStr += gameResultList.get(i).getDogNumber() + ">";
+            }
+
+            // 查询本局所有赞助记录 并按用户分类归集起来
+            List<LogAwardVo> logList = null;
+            List<LogAwardVo> logAwardList = logAwardService.queryListByGameNum(currentGameNum);
+            Map<Long, List<LogAwardVo>> userMap = new HashMap();
+            for (LogAwardVo logAwardVo: logAwardList) {
+                if (!userMap.containsKey(logAwardVo.getUserId())) {
+                    logList = new ArrayList<>();
+                } else {
+                    logList = userMap.get(logAwardVo.getUserId());
+                }
+                logList.add(logAwardVo);
+                userMap.put(logAwardVo.getUserId(), logList);
+            }
+
+            String showStr = "";
+            String mailStr01 = "";
+            String mailStr02 = "";
+            String mailStr03 = "";
+            String kong01 = "\n-------------战况摘要------------\n\n";
+            String kong02 = "\n-------------赞助记录------------\n\n";
+            String duStr = "";
+            String mingStr = "";
+            String baoStr = "";
+            Long userId = null;
+            BigDecimal sum = BigDecimal.ZERO;
+
+            // 给赞助者发送邮件奖励
+            if (jackpot.compareTo(BigDecimal.ZERO) == 1){
+
+                for (Map.Entry<Long, List<LogAwardVo>> entry : userMap.entrySet()) {
+                    Long mapKey = entry.getKey();
+                    List<LogAwardVo> mapValue = entry.getValue();
+                    System.out.println("赞助用户：" + mapKey + " == " + mapValue);
+
+                    duStr = "";
+                    mingStr = "";
+                    baoStr = "";
+                    sum = BigDecimal.ZERO;
+                    for (int j = 0; j < mapValue.size(); j++){
+                        if (mapValue.get(j).getStakeType() == 1){ // 单压
+                            duStr += "独赢：" + mapValue.get(j).getMoney() + " ASG = " + mapValue.get(j).getOdds() + " x " + mapValue.get(j).getPourNum() + "注 x （" + mapValue.get(j).getDogNum() + "）\n";
+                        } else if (mapValue.get(j).getStakeType() == 2){ // 名次
+                            mingStr += "名次" + mapValue.get(j).getSelectType() + "：" + mapValue.get(j).getMoney() + " ASG = " + mapValue.get(j).getOdds() + " x " + mapValue.get(j).getPourNum() + "注 x（" + mapValue.get(j).getDogNum() + "）\n";
+                        } else if (mapValue.get(j).getStakeType() == 3){ // 包围
+                            baoStr += "包围" + mapValue.get(j).getSelectType() + "：" + mapValue.get(j).getMoney() + " ASG = " + mapValue.get(j).getOdds() + " x " + mapValue.get(j).getPourNum() + "注 x（" + mapValue.get(j).getDogNum() + "）\n";
+                        }
+                        sum = sum.add(mapValue.get(j).getMoney());
+                        userId = mapValue.get(j).getUserId();
+
+                        mailStr01 = "恭喜您获得奖励： " + sum + " ASG\n";
+                        mailStr02 = "场次号:<color='#B73600'>No." + currentGameNum + "</color>\n";
+                        mailStr03 = "名次:<color='#B73600'>" + dogNumStr + "</color>\n";
+
+                        showStr = mailStr01 + kong01 + mailStr02 + mailStr03 + kong02 + duStr + mingStr + baoStr;
+                    }
+
+                    MailVo mailVo = new MailVo();
+                    mailVo.setMailTitle("赞助成功！");
+                    mailVo.setMailContent(showStr);
+                    mailVo.setAwardNum(sum.intValue());
+                    mailVo.setIsAttribute(0);
+                    mailVo.setAwardType(1); // 代币
+                    mailVo.setType(2);
+                    mailVo.setImgName("jinbi");
+                    mailVo.setUserId(userId);
+                    mailVo.setCreateTime(new Date());
+                    if (sum.compareTo(BigDecimal.ZERO) == 1){
+                        mailVo.setIsReceive(0);
+                    } else {
+                        mailVo.setIsReceive(1);
+                    }
+                    mailService.save(mailVo);
+
+                    Map map = new HashMap();
+                    map.put("userId", userId);
+                    map.put("isHaveUnread", 1);
+                    userService.update(map);
+                }
+            }
+
+            // 给参赛者发送邮件奖励
+            for (int j = 0; j < currentList.size(); j++){
+
+                DecimalFormat decimalFormat = new DecimalFormat("00");
+                String numFormat = decimalFormat.format(currentList.get(j).getRanking());
+                BigDecimal innerRatio = configService.queryByBigDecimalKey("inner_ranking_" + numFormat);
+                BigDecimal outRatio = configService.queryByBigDecimalKey("out_ranking_" + numFormat);
+                Integer brawnNum = configService.queryByIntKey("brawn_ranking_" + numFormat);
+                BigDecimal sum2 = innerRatio.multiply(new BigDecimal(6000));
+                BigDecimal sum1 = outRatio.multiply(new BigDecimal(currentBetTotal));
+                BigDecimal sum3 = sum1.add(sum2);
+
+                // 排除人机狗狗
+                if (currentList.get(j).getId() > 0){
+
+                    mailStr02 = "场次号:<color='#B73600'>No." + currentGameNum + "</color>\n";
+                    mailStr03 = "名次:<color='#B73600'>" + dogNumStr + "</color>\n";
+
+                    if (sum3.compareTo(BigDecimal.ZERO) == 1 || brawnNum > 0){
+
+                        if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) == 1){
+                            mailStr01 = "恭喜您获得奖励： " + sum3 + " ASG + " + brawnNum + " 体力值\n";
+                        } else {
+                            if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) <= 0) {
+                                mailStr01 = "恭喜您获得奖励： " + brawnNum + " 体力值\n";
+                            } else if (sum3.compareTo(BigDecimal.ZERO) == 1 && brawnNum <= 0) {
+                                mailStr01 = "恭喜您获得奖励： " + sum3 + " ASG\n";
+                            }
+                        }
+
+                        showStr = mailStr01 + kong01 + mailStr02 + mailStr03;
+
+                        MailVo mailVo = new MailVo();
+                        mailVo.setMailTitle("参赛结果！");
+                        mailVo.setMailContent(showStr);
+                        mailVo.setAwardNum(sum3.intValue());
+                        mailVo.setIsAttribute(0);
+                        mailVo.setAwardType(1); // 代币
+                        mailVo.setType(2);
+                        mailVo.setIsReceive(0);
+                        if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) == 1){
+                            mailVo.setBrawnNum(brawnNum);
+                            mailVo.setImgName("jinbi,jingli");
+                            mailVo.setGameAward(sum1.add(sum2) + "," + brawnNum);
+                        } else {
+                            if (brawnNum > 0 && sum3.compareTo(BigDecimal.ZERO) <= 0){
+                                mailVo.setImgName("jingli");
+                                mailVo.setBrawnNum(brawnNum);
+                                mailVo.setGameAward(brawnNum.toString());
+                            } else if (sum3.compareTo(BigDecimal.ZERO) == 1 && brawnNum <= 0) {
+                                mailVo.setImgName("jinbi");
+                                mailVo.setGameAward(sum1.add(sum2).toString());
+                            }
+                        }
+                        mailVo.setUserId(currentList.get(j).getUserId());
+                        mailVo.setCreateTime(new Date());
+                        mailService.save(mailVo);
+                    } else {
+                        showStr = "很遗憾您的狗狗未能入围！" + kong01 + mailStr02 + mailStr03;
+                        MailVo mailVo = new MailVo();
+                        mailVo.setMailTitle("参赛结果！");
+                        mailVo.setMailContent(showStr);
+                        mailVo.setAwardNum(0);
+                        mailVo.setIsAttribute(0);
+                        mailVo.setAwardType(1); // 代币
+                        mailVo.setType(2);
+                        mailVo.setIsReceive(1);
+                        mailVo.setBrawnNum(0);
+                        mailVo.setImgName("");
+                        mailVo.setGameAward("");
+                        mailVo.setUserId(currentList.get(j).getUserId());
+                        mailVo.setCreateTime(new Date());
+                        mailService.save(mailVo);
+                    }
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1125,198 +1076,6 @@ public class ScheduledTask {
         }
 
         System.out.println("随机到: " + trackList);
-    }
-
-    public Object matchingDogBEIFEN() {
-
-        BigDecimal oneDogFightingMin = null;
-        BigDecimal oneDogFightingMax = null;
-
-        if(matchList.size() <= 0) {
-            matchList.add(enrollList.get(0));
-            enrollList.remove(0);
-        }
-
-        if (matchSecondsCurrent <= 5){
-            oneDogFightingMin = matchList.get(0).getFightingNum().multiply(new BigDecimal(0.8));
-            oneDogFightingMax = matchList.get(0).getFightingNum().multiply(new BigDecimal(1.2));
-        } else {
-            BigDecimal numMin = new BigDecimal(0.8).add(new BigDecimal(matchSecondsCurrent - 5).multiply(new BigDecimal(0.1)));
-            BigDecimal numMax = new BigDecimal(0.8).add(new BigDecimal(matchSecondsCurrent - 5).multiply(new BigDecimal(0.1)));
-            oneDogFightingMin = matchList.get(0).getFightingNum().multiply(numMin);
-            oneDogFightingMax = matchList.get(0).getFightingNum().multiply(numMax);
-        }
-
-        for (int i = enrollList.size() - 1; i >= 0; i--){
-            if (enrollList.get(i).getFightingNum().compareTo(matchList.get(0).getFightingNum()) == 0 || enrollList.get(i).getFightingNum().compareTo(oneDogFightingMin) == 1 || enrollList.get(i).getFightingNum().compareTo(oneDogFightingMax) == -1){
-                matchList.add(enrollList.get(i));
-                enrollList.remove(i);
-                System.out.println("匹配到一只新的狗狗");
-            }
-        }
-
-        if (matchList.size() >= 5){
-            List<UserDogVo> dogVoList = matchList;
-
-            // 组队完成 生成对战狗狗list 添加到队列
-            synchronized (matcherQueue) {
-                matcherQueue.offer(dogVoList);
-                matcherQueue.notify();
-            }
-
-            // 组队完成 生成局号 添加到队列
-            synchronized (gameNumQueue) {
-                gameNumQueue.offer(CommonUtil.generateOrderNumber());
-                gameNumQueue.notify();
-            }
-
-            matchSecondsCurrent = 0;
-            matchList = new ArrayList<>();
-
-            System.out.println("把狗狗 " + dogVoList + "加入到队列 中!");
-        }
-
-        // 匹配失败
-//        if (matchSecondsTotal <= matchSecondsCurrent){
-//
-//            System.out.println(matchList);
-//            System.out.println("匹配失败 返还用户 体力 和 AGS");
-//            failList.addAll(matchList);
-//            matchSecondsCurrent = 0;
-//            matchList = new ArrayList<>();
-//        }
-
-        if (matchSecondsCurrent >= 20 && matchList.size() < 6){
-
-            tempId = 0;
-            //创建随机数对象
-            Random r = new Random();
-            List<Integer> battle = null;
-
-            battle = new ArrayList<>();
-            //判断集合的长度是不是小于4
-            while (battle.size() < 6) {
-                //产生一个随机数，添加到集合
-                int number = r.nextInt(1000) % (1000 - 500 + 1) + 500;
-                battle.add(number);
-            }
-            for (int i = matchList.size(); i < 6; i++){
-                tempId --;
-                matchList.add(createDog(tempId, new BigDecimal(battle.get(i)), 6, 1));
-                System.out.println("进行人机匹配" + i);
-            }
-
-            countRanking();
-
-            // 组队完成 生成对战狗狗list 添加到队列
-            synchronized (matcherQueue) {
-                matcherQueue.offer(matchList);
-                matcherQueue.notify();
-            }
-
-            // 组队完成 生成局号 添加到队列
-            synchronized (gameNumQueue) {
-                gameNumQueue.offer(CommonUtil.generateOrderNumber());
-                gameNumQueue.notify();
-            }
-
-            System.out.println("人机匹配完毕");
-            System.out.println(matcherQueue);
-            matchSecondsCurrent = 0;
-            matchList = new ArrayList<>();
-//            gameStatus = 2;
-//            singleThreadExecutor();
-        }
-
-        return null;
-    }
-
-    private void countRankingBEIFEN(){
-
-        // 按战力升序
-//        List<UserDogVo> sortedByFightingAscList = matchList.stream().sorted(Comparator.comparing(h -> ((BigDecimal) h.getFightingNum()))).collect(Collectors.toList());
-
-
-        //创建随机数对象
-        Random r = new Random();
-        List<Integer> battle = null;
-
-        // 按战力降序
-        matchList.sort(Comparator.comparing(UserDogVo::getFightingNum).reversed());
-        for (int i = 0; i < matchList.size(); i++){
-
-            battle = new ArrayList<>();
-            //判断集合的长度是不是小于4
-            while (battle.size() < 4) {
-                //产生一个随机数，添加到集合
-                int number = r.nextInt(8) % (8 - 3 + 1) + 3;
-                battle.add(number);
-            }
-
-            matchList.get(i).setSpeed(battle.get(0));
-            matchList.get(i).setMood(battle.get(1));
-            matchList.get(i).setEndurance(battle.get(2));
-            matchList.get(i).setLuck(battle.get(3));
-
-            BigDecimal mood = new BigDecimal(matchList.get(i).getMood());
-            // 冲刺冷却秒数
-            BigDecimal coolSec = new BigDecimal(10).subtract(mood.multiply(new BigDecimal(0.01)).multiply(new BigDecimal(10)));
-            // 正常速度
-            Integer speed = matchList.get(i).getSpeed();
-            // 冲刺概率
-            Integer luck = matchList.get(i).getLuck();
-            // 冲刺速度
-            BigDecimal speedUp = new BigDecimal(matchList.get(i).getSpeed()).multiply(new BigDecimal(2));
-            // 每次冲刺持续时间 (耐力点数 * 0.1)
-            BigDecimal spanSec = new BigDecimal(matchList.get(i).getEndurance()).multiply(new BigDecimal(0.1));
-            Integer speedUpCount = 0;
-            Integer coolSecInt = 0;
-            // 未冲刺总距离
-            BigDecimal noDashDistance = BigDecimal.ZERO;
-            // 未冲刺总秒数
-            BigDecimal secNum = BigDecimal.ZERO;
-            // 冲刺总距离
-            BigDecimal dashDistance = BigDecimal.ZERO;
-            // 冲刺总秒数
-            BigDecimal speedUpSec = BigDecimal.ZERO;
-            for(int j = 0; j < 90; j+=speed){
-                // 获得冲刺概率
-                Map<String, Integer> map = new HashMap<>();
-                map.put("0", 100 - luck);
-                map.put("1", luck);
-                // 判断是否获得了冲刺
-                if (coolSecInt == 0 && weightRandom(map).equals("1")){
-                    speedUpCount++;
-                    speedUpSec = speedUpSec.add(spanSec);
-                    coolSecInt = coolSec.intValue();
-                }
-                coolSecInt--;
-            }
-
-            dashDistance = speedUpSec.multiply(speedUp);
-            noDashDistance = new BigDecimal(90).subtract(dashDistance);
-            secNum = noDashDistance.divide(new BigDecimal(speed), BigDecimal.ROUND_CEILING);
-
-//            matchList.get(i).setSpurtNum(speedUpCount);
-//            matchList.get(i).setRanking(i + 1);
-//            matchList.get(i).setFinishSec(secNum.add(speedUpSec));
-
-            if (i == 0) {
-                matchList.get(i).setSpeed(5);
-            } else {
-                matchList.get(i).setSpeed(8 - i);
-            }
-            System.out.println(r.nextInt(2));
-            matchList.get(i).setSpurtNum(r.nextInt(2));
-            matchList.get(i).setRanking(i + 1);
-            matchList.get(i).setFinishSec(new BigDecimal(12).add(new BigDecimal(4.5).multiply(new BigDecimal(i))));
-
-        }
-
-//        for (int i = 0; i < sortedByFightingAscList.size(); i++){
-//            BigDecimal num1 = sortedByFightingAscList.get(i).getFightingNum().multiply(new BigDecimal(0.25));
-//            BigDecimal num2 = sortedByFightingAscList.get(i).getFightingNum().divide(new BigDecimal(4));
-//        }
     }
 
     public static String weightRandom(Map<String, Integer> map) {

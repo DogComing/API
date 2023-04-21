@@ -37,12 +37,10 @@ public class ApiGameController extends ApiBaseAction {
     @Autowired
     private ApiConfigService configService;
 
-    /***
-     * @Description: 所有参赛狗狗
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 所有参赛狗狗
+     * @param loginUser
+     * @return
      */
     @ApiOperation(value = "所有参赛狗狗")
     @GetMapping("all/dog")
@@ -61,12 +59,11 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsFail("未查询到参赛狗狗");
     }
 
-    /***
-     * @Description: 单压
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 单压
+     * @param loginUser
+     * @param stakeOneVo
+     * @return
      */
     @ApiOperation(value = "单压")
     @PostMapping("stake/one")
@@ -116,12 +113,11 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsObject(400,"操作失败，请重试", null);
     }
 
-    /***
-     * @Description: 按名次押注
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 按名次押注
+     * @param loginUser
+     * @param stakeMoreVo
+     * @return
      */
     @ApiOperation(value = "按名次押注")
     @PostMapping("stake/more")
@@ -263,12 +259,11 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsObject(400,"操作失败，请重试", null);
     }
 
-    /***
-     * @Description: 包围
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 包围
+     * @param loginUser
+     * @param stakeMoreVo
+     * @return
      */
     @ApiOperation(value = "包围")
     @PostMapping("stake/surround")
@@ -410,12 +405,10 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsObject(400,"操作失败，请重试", null);
     }
 
-    /***
-     * @Description: 当前游戏状态
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 当前游戏状态
+     * @param loginUser
+     * @return
      */
     @ApiOperation(value = "当前游戏状态")
     @GetMapping("status")
@@ -433,12 +426,10 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    /***
-     * @Description: 获取奖金池
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 获取奖金池
+     * @param loginUser
+     * @return
      */
     @ApiOperation(value = "获取奖金池")
     @GetMapping("jackpot")
@@ -454,12 +445,10 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    /***
-     * @Description: 获取游戏结果
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 获取游戏结果
+     * @param loginUser
+     * @return
      */
     @ApiOperation(value = "获取游戏结果")
     @GetMapping("result")
@@ -492,12 +481,10 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    /***
-     * @Description: 获取赞助记录
-     * @Param: [loginUser, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 获取赞助记录
+     * @param loginUser
+     * @return
      */
     @ApiOperation(value = "获取赞助记录")
     @GetMapping("record")
@@ -512,6 +499,12 @@ public class ApiGameController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
+    /**
+     * 获取胜率
+     * @param loginUser
+     * @param stakeMoreVo
+     * @return
+     */
     @ApiOperation(value = "获取胜率")
     @PostMapping("win/ratio")
     public Object getWinRatio(@LoginUser UserVo loginUser, @RequestBody StakeMoreVo stakeMoreVo){
