@@ -37,4 +37,6 @@ public class ApiUserWildService {
     public int deleteByUser(Long userId, Integer id) { return userWildMapper.deleteByUser(userId, id); }
 
     public int updateNFT(Map<String, Object> map) { return userWildMapper.updateNFT(map); }
+
+    public int updateByNFT(Map<String, Object> map) { return userWildMapper.updateByNFT(map); }
 }

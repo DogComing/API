@@ -10,11 +10,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @program: platform
- * @description: 用户捕捉道具实体类
- * @author: Yuan
- * @create: 2020-08-22 16:42
- **/
+ * 用户捕捉道具实体类
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel("用户捕捉道具实体类")

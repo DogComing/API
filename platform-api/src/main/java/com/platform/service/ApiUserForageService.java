@@ -37,4 +37,6 @@ public class ApiUserForageService {
     public int deleteByUser(Long userId, Integer id){ return apiUserForageMapper.deleteByUser(userId, id); }
 
     public int updateNFT(Map<String, Object> map) { return apiUserForageMapper.updateNFT(map); }
+
+    public int updateByNFT(Map<String, Object> map) { return apiUserForageMapper.updateByNFT(map); }
 }

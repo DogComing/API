@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +24,8 @@ import java.util.Map;
 import static com.platform.config.ConstantConfig.*;
 
 /**
- * @program: platform
- * @description: 铸造、消耗nft接口
- * @author: Yuan
- * @create: 2020-09-04 11:50
- **/
+ * 铸造、消耗nft接口
+ */
 @Api(tags = "铸造、销毁nft接口")
 @RestController
 @RequestMapping("/api/nft")
@@ -48,13 +46,15 @@ public class ApiNFTController extends ApiBaseAction {
 
     @Autowired
     private ApiNftService nftService;
+    @Autowired
+    private ApiLogPayService logPayService;
 
-    /***
-     * @Description: 铸造NFT
-     * @Param: [loginUser, type, id]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 铸造NFT
+     * @param loginUser
+     * @param type 铸造NFT类型 【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备】
+     * @param id 物品id
+     * @return
      */
     @ApiOperation(value = "铸造NFT 【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备】")
     @PostMapping("cast")
@@ -62,6 +62,7 @@ public class ApiNFTController extends ApiBaseAction {
 
         try {
 
+            Map nftMap = new HashMap();
             NftVo nftVo = new NftVo();
             String nftUrl = "";
             Long nftId = null;
@@ -71,40 +72,70 @@ public class ApiNFTController extends ApiBaseAction {
                 if (userDogVo == null) return toResponsObject(400,"宠物查询失败，请重试！",null);
                 if (userDogVo.getIsNft() == 1) return toResponsObject(400,"该宠物已是NFT！",null);
 
-                nftVo = returnNFTVo(loginUser.getUserId(), type, userDogVo.getImgName());
-                Map nftMap = CreateNftUtil.createDogNftJson(userDogVo, nftVo);
-//                nftUrl = CreateNftUtil.createDogNftJson(userDogVo, nftVo);
-                nftUrl = nftMap.get("jsonUrl").toString();
-                nftId = nftVo.getNftId();
-                nftVo.setJsonUrl(nftUrl);
-                nftVo.setAttributes(nftMap.get("attributes").toString());
+                nftVo = returnNFTVo(loginUser.getUserId(), type, userDogVo.getImgName(), 10000L, false);
+                nftMap = CreateNftUtil.createDogNftJson(nftVo, userDogVo);
 
             } else if(type == 2){
                 UserPropVo userPropVo = userPropService.queryObjectByUser(loginUser.getUserId(), id);
                 if (userPropVo == null) return toResponsObject(400,"道具查询失败，请重试！",null);
                 if (userPropVo.getIsNft() == 1) return toResponsObject(400,"该道具已是NFT！",null);
 
+                nftVo = returnNFTVo(loginUser.getUserId(), type, userPropVo.getImgName(), 300000000L, false);
+                nftMap = CreateNftUtil.createPropNftJson(nftVo, userPropVo);
+
             } else if(type == 3){
                 UserForageVo userForageVo = userForageService.queryObjectByUser(loginUser.getUserId(), id);
                 if (userForageVo == null) return toResponsObject(400,"饲料查询失败，请重试！",null);
                 if (userForageVo.getIsNft() == 1) return toResponsObject(400,"该饲料已是NFT！",null);
 
+                if (userForageVo.getForageType() == 2){
+                    nftVo = returnNFTVo(loginUser.getUserId(), type, userForageVo.getImgName(), 200000000L, true);
+                    nftVo.setType(7);
+                } else {
+                    nftVo = returnNFTVo(loginUser.getUserId(), type, userForageVo.getImgName(), 500000000L, false);
+                }
+
+                nftMap = CreateNftUtil.createFeedNftJson(nftVo, userForageVo);
+
             } else if(type == 4){
                 UserWildVo userWildVo = userWildService.queryObjectByUser(loginUser.getUserId(), id);
-                if (userWildVo == null) return toResponsObject(400,"装备查询失败，请重试！",null);
-                if (userWildVo.getIsNft() == 1) return toResponsObject(400,"该装备已是NFT！",null);
+                if (userWildVo == null) return toResponsObject(400,"野生查询失败，请重试！",null);
+                if (userWildVo.getIsNft() == 1) return toResponsObject(400,"该野生已是NFT！",null);
+
+                nftVo = returnNFTVo(loginUser.getUserId(), type, userWildVo.getImgName(), 400000000L, false);
+                nftMap = CreateNftUtil.createWildNftJson(nftVo, userWildVo);
 
             } else if(type == 5){
                 UserCatchEquipVo userCatchEquipVo = userCatchEquipService.queryObjectByUser(loginUser.getUserId(), id);
                 if (userCatchEquipVo == null) return toResponsObject(400,"捕捉装备查询失败，请重试！",null);
                 if (userCatchEquipVo.getIsNft() == 1) return toResponsObject(400,"该捕捉装备已是NFT！",null);
 
+                if (userCatchEquipVo.getIsGem() == 1){
+                    nftVo = returnNFTVo(loginUser.getUserId(), type, userCatchEquipVo.getImgName(), 200000000L, true);
+                    nftVo.setType(7);
+                } else {
+                    nftVo = returnNFTVo(loginUser.getUserId(), type, userCatchEquipVo.getImgName(), 100000000L, false);
+                }
+                nftMap = CreateNftUtil.createCatchNftJson(nftVo, userCatchEquipVo);
+
             } else if(type == 6){
                 UserFightEquipVo userFightEquipVo = userFightEquipService.queryObjectByUser(loginUser.getUserId(), id);
                 if (userFightEquipVo == null) return toResponsObject(400,"装备查询失败，请重试！",null);
                 if (userFightEquipVo.getIsNft() == 1) return toResponsObject(400,"该装备已是NFT！",null);
 
+                if (userFightEquipVo.getIsGem() == 1){
+                    nftVo = returnNFTVo(loginUser.getUserId(), type, userFightEquipVo.getImgName(), 200000000L, true);
+                    nftVo.setType(7);
+                } else {
+                    nftVo = returnNFTVo(loginUser.getUserId(), type, userFightEquipVo.getImgName(), 100000000L, false);
+                }
+                nftMap = CreateNftUtil.createFightNftJson(nftVo, userFightEquipVo);
             }
+
+            nftUrl = nftMap.get("jsonUrl").toString();
+            nftId = nftVo.getNftId();
+            nftVo.setJsonUrl(nftUrl);
+            nftVo.setAttributes(nftMap.get("attributes").toString());
 
             Integer nonce = (int)((Math.random() * 9 + 1) * 1000);
             Map<String,Object> form = new HashMap<>();
@@ -122,6 +153,17 @@ public class ApiNFTController extends ApiBaseAction {
             JSONObject result = JSON.parseObject(body);
             if (result.getInteger("code") == 200 && result.getString("message").equals("success")){
 
+                LogPayVo logPayVo = new LogPayVo();
+                logPayVo.setUserId(loginUser.getUserId());
+                logPayVo.setMoney(new BigDecimal(1));
+                logPayVo.setType(4);
+                logPayVo.setTypeTxt("铸造NFT");
+                logPayVo.setCurrencyType(2);
+                logPayVo.setCurrencyTxt("USDT");
+                logPayVo.setCreateTime(new Date());
+                logPayVo.setRemarks("成功支付" + 1 + "USDT，铸造" + nftVo.getName());
+                logPayService.save(logPayVo);
+
                 nonce = (int)((Math.random() * 9 + 1) * 1000);
                 form = new HashMap<>();
                 form.put("address", loginUser.getAddress());
@@ -131,7 +173,6 @@ public class ApiNFTController extends ApiBaseAction {
                 form.put("url", nftUrl);
                 sign = MD5Util.encodeSign(form, key);
                 form.put("sign", sign);
-                System.out.println("请求参数：" + form);
                 res = HttpRequest.post(createNFT).form(form).header("Authorization", authorization).timeout(10000).execute();
                 body = res.body();
                 System.out.println("创建NFT结果：" + body);
@@ -160,6 +201,8 @@ public class ApiNFTController extends ApiBaseAction {
                     }
                     nftService.save(nftVo);
                     return toResponsSuccess(true);
+                } else {
+                    return toResponsObject(400,result.getString("msg"), null);
                 }
             }
 
@@ -171,12 +214,12 @@ public class ApiNFTController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    /***
-     * @Description: 导出NFT
-     * @Param: [loginUser, type, id]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 导出NFT
+     * @param loginUser
+     * @param type 导出NFT类型【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备】
+     * @param id 物品id
+     * @return
      */
     @ApiOperation(value = "导出NFT【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备】")
     @PostMapping("out")
@@ -237,7 +280,7 @@ public class ApiNFTController extends ApiBaseAction {
         form.put("sign", sign);
         HttpResponse res = HttpRequest.post(outNFT).form(form).header("Authorization", authorization).timeout(10000).execute();
         String body = res.body();
-        System.out.println("冻结NFT结果：" + body);
+        System.out.println("提取NFT结果：" + body);
         JSONObject result = JSON.parseObject(body);
         if (result.getInteger("code") == 200 && result.getString("message").equals("success")){
 
@@ -266,12 +309,12 @@ public class ApiNFTController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    /***
-     * @Description: 销毁NFT
-     * @Param: [loginUser, order_status, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * 销毁NFT
+     * @param loginUser
+     * @param type
+     * @param id
+     * @return
      */
     @ApiOperation(value = "销毁NFT")
     @PostMapping("destroy")
@@ -286,12 +329,12 @@ public class ApiNFTController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    /***
-     * @Description: NFT列表
-     * @Param: [loginUser, order_status, page, size]
-     * @return: java.lang.Object
-     * @Author: Yuan
-     * @Date: 2020/8/6
+    /**
+     * NFT列表
+     * @param loginUser
+     * @param page
+     * @param size
+     * @return
      */
     @ApiOperation(value = "NFT列表")
     @GetMapping("logList")
@@ -325,10 +368,33 @@ public class ApiNFTController extends ApiBaseAction {
         return toResponsFail("网络异常，请重试");
     }
 
-    public NftVo returnNFTVo(Long userId, Integer type, String imgName){
+    /**
+     * 狗狗：1万~1亿-1
+     * 装备：1亿-2亿-1
+     * 珍宝：2亿-3亿-1
+     * 道具：3亿-4亿-1
+     * 野生：4亿-5亿-1
+     * 饲料：5亿到6亿-1
+     * @param userId
+     * @param type 1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备
+     * @param imgName
+     * @return
+     */
+    public NftVo returnNFTVo(Long userId, Integer type, String imgName, Long minNum, Boolean isGem){
 
-        Integer num = nftService.queryTotal(type);
-        Long numL = 10000L + Long.parseLong(num.toString());
+        Integer num = 0;
+
+        if (isGem){
+            num = nftService.queryTotal(7);
+        } else {
+            if (type == 5 || type == 6){
+                num = nftService.queryTotal(5) + nftService.queryTotal(6);
+            } else {
+                num = nftService.queryTotal(type);
+            }
+        }
+
+        Long numL = minNum + Long.parseLong(num.toString());
 
         NftVo nftVo = new NftVo();
         nftVo.setType(type);
@@ -336,20 +402,32 @@ public class ApiNFTController extends ApiBaseAction {
         nftVo.setUserId(userId);
         nftVo.setDescription("NFT的描述");
         nftVo.setCreateTime(new Date());
+        if (type == 3){
+            nftVo.setGemType(1);
+        } else if (type == 5){
+            nftVo.setGemType(2);
+        } else if(type == 6){
+            nftVo.setGemType(3);
+        }
 
         if(type == 1){
             nftVo.setName("DOG_NFT");
             nftVo.setImage(nftImageBaseUrl + "gou_gou/" + imgName + ".png");
         } else if(type == 2){
-
+            nftVo.setName("PROP_NFT");
+            nftVo.setImage(nftImageBaseUrl + "dao_ju/" + imgName + ".png");
         } else if(type == 3){
-
+            nftVo.setName("FEED_NFT");
+            nftVo.setImage(nftImageBaseUrl + "si_liao/" + imgName + ".png");
         } else if(type == 4){
-
+            nftVo.setName("WILD_NFT");
+            nftVo.setImage(nftImageBaseUrl + "ye_sheng/" + imgName + ".png");
         } else if(type == 5){
-
+            nftVo.setName("CATCH_NFT");
+            nftVo.setImage(nftImageBaseUrl + "bu_zhuo/" + imgName + ".png");
         } else if(type == 6){
-
+            nftVo.setName("FIGHT_NFT");
+            nftVo.setImage(nftImageBaseUrl + "zhan_dou/" + imgName + ".png");
         }
 
         return nftVo;

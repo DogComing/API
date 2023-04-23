@@ -76,4 +76,6 @@ public class ApiUserCatchEquipService {
     public int updateNFT(Map<String, Object> map) { return userCatchEquipMapper.updateNFT(map); }
 
     public int updateBatchIsUse(Long userId, Integer catchType) { return userCatchEquipMapper.updateBatchIsUse(userId, catchType); }
+
+    public int updateByNFT(Map<String, Object> map) { return userCatchEquipMapper.updateByNFT(map); }
 }

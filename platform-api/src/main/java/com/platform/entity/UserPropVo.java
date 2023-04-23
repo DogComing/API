@@ -5,16 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @program: platform
- * @description: 用户道具实体类
- * @author: Yuan
- * @create: 2020-09-09 10:20
- **/
+ * 用户道具实体类
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel("用户道具实体类")
@@ -25,6 +23,9 @@ public class UserPropVo implements Serializable {
     @ApiModelProperty("自增主键Id")
     private Integer id;
 
+    /**
+     * 道具等级
+     */
     @ApiModelProperty("道具等级")
     private Integer grade;
 
@@ -125,4 +126,42 @@ public class UserPropVo implements Serializable {
      * NFT类型：1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备
      */
     private Integer nftType;
+
+    /**
+     * 道具属性类型【string类型 文字展示】
+     * 1:强制增加宠物2点成长  2:参赛时免扣5点体力  3:参赛时免交报名费  4:参赛时临时增加战斗力  5:参赛结束后减少宠物冷却时间  6:随机开出1～5级捕捉装备  7:随机开出1～5级品质的狗狗
+     */
+    private String attributeTypeTxt;
+
+    public String getAttributeTypeTxt() {
+
+        if (null != attributeType && attributeType != 0 && StringUtils.isEmpty(attributeTypeTxt)) {
+
+            attributeTypeTxt = "";
+            switch (attributeType) {
+                case 1:
+                    attributeTypeTxt = "强制增加宠物2点成长";
+                    break;
+                case 2:
+                    attributeTypeTxt = "参赛时免扣5点体力";
+                    break;
+                case 3:
+                    attributeTypeTxt = "参赛时免交报名费";
+                    break;
+                case 4:
+                    attributeTypeTxt = "参赛时临时增加战斗力";
+                    break;
+                case 5:
+                    attributeTypeTxt = "参赛结束后减少宠物冷却时间";
+                    break;
+                case 6:
+                    attributeTypeTxt = "随机开出1～5级捕捉装备";
+                    break;
+                case 7:
+                    attributeTypeTxt = "随机开出1～5级品质的狗狗";
+                    break;
+            }
+        }
+        return attributeTypeTxt;
+    }
 }

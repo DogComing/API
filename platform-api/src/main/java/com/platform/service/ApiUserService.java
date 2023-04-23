@@ -30,6 +30,8 @@ public class ApiUserService {
 
     public UserVo queryByOpenId(String openId) { return userMapper.queryByOpenId(openId); }
 
+    public UserVo queryByAddress(String address) { return userMapper.queryByAddress(address); }
+
     public void countGameWinNum(Map<String, Object> map) { userMapper.countGameWinNum(map); }
 
     public void resettingSignIn(){ userMapper.resettingSignIn(); }

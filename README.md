@@ -17,6 +17,13 @@
 * CACHE:Redis4.0
 
 
+# 打包流程
+建议用idea打包
+* 修改 application.yml 文件，切换端口号为：1100，切换打包环境为：prod
+* 点击idea右侧菜单栏Maven->dog_race(root)->Lifecycle->install（如下图所示）
+![img.png](img.png)
+
+
 # 运行环境
 * 数据库服务器：Mysql5.8
 * 操作系统：Windows、Linux、Unix 等

@@ -52,4 +52,6 @@ public class ApiUserFightEquipService {
     public int deleteByUser(Long userId, Integer id){ return fightEquipMapper.deleteByUser(userId, id); }
 
     public int updateNFT(Map<String, Object> map) { return fightEquipMapper.updateNFT(map); }
+
+    public int updateByNFT(Map<String, Object> map) { return fightEquipMapper.updateByNFT(map); }
 }

@@ -27,22 +27,20 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
-    <!--查询某个饲料详情-->
+    <!--查询某个野生详情-->
     <select id="queryObject" resultMap="wildMap">
-        select * from oil_user_wild where id = #{value}
+        select * from oil_user_wild where id = #{value} and is_draw = 0
     </select>
 
-    <!--查询饲料列表-->
+    <!--查询野生列表-->
     <select id="queryList" resultMap="wildMap">
-        select * from oil_user_wild
-        <where>
-            <if test="isFight != null">
-                AND is_fight = #{isFight}
-            </if>
-            <if test="userId != null">
-                AND user_id = #{userId}
-            </if>
-        </where>
+        select * from oil_user_wild where is_draw = 0
+        <if test="isFight != null">
+            AND is_fight = #{isFight}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
@@ -56,21 +54,19 @@
         </if>
     </select>
 
-    <!--查询饲料总数-->
+    <!--查询野生总数-->
     <select id="queryTotal" resultType="int">
-        select count(1) from oil_user_wild
-        <where>
-            <if test="isFight != null">
-                AND is_fight = #{isFight}
-            </if>
-            <if test="userId != null">
-                AND user_id = #{userId}
-            </if>
-        </where>
+        select count(1) from oil_user_wild where is_draw = 0
+        <if test="isFight != null">
+            AND is_fight = #{isFight}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
     </select>
 
     <select id="queryObjectByUser" resultMap="wildMap">
-        select * from oil_user_wild where id = #{id} and user_id = #{userId}
+        select * from oil_user_wild where id = #{id} and user_id = #{userId} and is_draw = 0
     </select>
 
     <insert id="save" parameterType="com.platform.entity.UserWildVo" useGeneratedKeys="true" keyProperty="id">
@@ -127,11 +123,11 @@
     </update>
 
     <select id="allList" resultMap="wildMap">
-        select * from oil_user_wild where 1 = 1 and wild_num > 0 and user_id = #{userId} order by grade desc,fighting_num desc
+        select * from oil_user_wild where 1 = 1 and wild_num > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,fighting_num desc
     </select>
 
     <select id="allListByFight" resultMap="wildMap">
-        select * from oil_user_wild where 1 = 1 and wild_num > 0 and user_id = #{userId} and is_fight = #{isFight}
+        select * from oil_user_wild where 1 = 1 and wild_num > 0 and is_draw = 0 and user_id = #{userId} and is_fight = #{isFight}
     </select>
 
     <delete id="deleteByUser">
@@ -148,6 +144,16 @@
             <if test="updateTime != null">`update_time` = #{updateTime}</if>
         </set>
         where id = #{id} and user_id = #{userId}
+    </update>
+
+    <update id="updateByNFT" parameterType="java.util.Map">
+        update oil_user_wild
+        <set>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where nft_id = #{nftId}
     </update>
 
 </mapper>

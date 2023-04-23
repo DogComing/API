@@ -31,12 +31,12 @@
 
     <!--查询某个捕捉道具详情-->
     <select id="queryObject" resultMap="catchMap">
-		select * from oil_user_catch_equip where equip_id = #{value}
+		select * from oil_user_catch_equip where is_draw = 0 and equip_id = #{value}
 	</select>
 
     <!--查询捕捉道具列表-->
     <select id="queryList" resultMap="catchMap">
-        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0
+        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0 and is_draw = 0
         <if test="catchType != null">
             and catch_type = #{catchType}
         </if>
@@ -61,8 +61,7 @@
 
     <!--查询捕捉道具总数-->
     <select id="queryTotal" resultType="int">
-		select count(1) from oil_user_catch_equip
-        where 1 = 1 and equip_num > 0
+		select count(1) from oil_user_catch_equip where 1 = 1 and equip_num > 0 and is_draw = 0
         <if test="catchType != null">
             and catch_type = #{catchType}
         </if>
@@ -72,15 +71,15 @@
 	</select>
 
     <select id="queryObjectByUser" resultMap="catchMap">
-        select * from oil_user_catch_equip where id = #{id} and user_id = #{userId}
+        select * from oil_user_catch_equip where is_draw = 0 and id = #{id} and user_id = #{userId}
     </select>
 
     <select id="queryObjectByEquipId" resultMap="catchMap">
-        select * from oil_user_catch_equip where equip_id = #{equipId} and user_id = #{userId}
+        select * from oil_user_catch_equip where is_draw = 0 and equip_id = #{equipId} and user_id = #{userId}
     </select>
 
     <select id="queryObjectByGrade" resultMap="catchMap">
-        select * from oil_user_catch_equip where is_use = 1 and grade = #{grade} and catch_type = #{type} and user_id = #{userId}
+        select * from oil_user_catch_equip where is_draw = 0 and is_use = 1 and grade = #{grade} and catch_type = #{type} and user_id = #{userId}
     </select>
 
     <insert id="save" parameterType="com.platform.entity.UserCatchEquipVo" useGeneratedKeys="true" keyProperty="id">
@@ -139,12 +138,11 @@
     </update>
 
     <select id="allList" resultMap="catchMap">
-        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0 and user_id = #{userId} order by grade desc,durability_residue desc
+        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,durability_residue desc
     </select>
 
     <select id="queryListByMap" resultMap="catchMap">
-        select * from oil_user_catch_equip
-        where 1 = 1 and equip_num > 0
+        select * from oil_user_catch_equip where 1 = 1 and equip_num > 0 and is_draw = 0
         <if test="isGem != null">
             and `is_gem` = #{isGem}
         </if>
@@ -180,6 +178,16 @@
             <if test="updateTime != null">`update_time` = #{updateTime}</if>
         </set>
         where id = #{id} and user_id = #{userId}
+    </update>
+
+    <update id="updateByNFT" parameterType="java.util.Map">
+        update oil_user_catch_equip
+        <set>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where nft_id = #{nftId}
     </update>
 
 </mapper>

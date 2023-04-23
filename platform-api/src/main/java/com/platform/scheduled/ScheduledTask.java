@@ -296,110 +296,110 @@ public class ScheduledTask {
         }
 
         // 匹配失败
-        if (matchSecondsTotal <= matchSecondsCurrent && matchList.size() < 6){
-
-            System.out.println("匹配失败 返还用户 体力 和 AGS");
-            System.out.println(matchList);
-            failList.addAll(matchList);
-            matchSecondsCurrent = 0;
-
-            Integer brawnNum = configService.queryByIntKey("game_reduce_brawn");
-            Integer asg = configService.queryByIntKey("game_reduce_asg");
-
-            // 返还报名费用到邮箱
-            for (int i = 0; i < matchList.size(); i++){
-                // 判断是否人机狗狗
-                if (matchList.get(i).getId() > 0){
-
-                    MailVo mailVo = new MailVo();
-                    mailVo.setType(2);
-                    mailVo.setMailTitle("匹配失败返还报名费");
-                    mailVo.setMailContent("匹配失败返还报名费：" + asg);
-                    mailVo.setAwardType(1);
-                    if (brawnNum > 0) mailVo.setBrawnNum(brawnNum);
-                    if (brawnNum > 0 && asg > 0){
-                        mailVo.setImgName("jinbi,jingli");
-                        mailVo.setGameAward(asg + "," + brawnNum);
-                    }
-                    if (brawnNum <= 0 && asg > 0){
-                        mailVo.setImgName("jinbi");
-                        mailVo.setGameAward(asg.toString());
-                    }
-                    mailVo.setAwardNum(asg);
-                    mailVo.setIsAttribute(0);
-                    mailVo.setIsReceive(0);
-                    mailVo.setUserId(matchList.get(i).getUserId());
-                    mailVo.setCreateTime(new Date());
-                    mailService.save(mailVo);
-
-                    Map map = new HashMap();
-                    map.put("userId", matchList.get(i).getUserId());
-                    map.put("isHaveUnread", 1);
-                    userService.update(map);
-
-                    Map dogMap = new HashMap();
-                    dogMap.put("dogId", matchList.get(i).getId());
-                    dogMap.put("isCool", 0);
-                    dogMap.put("isGame", 0);
-                    userDogService.update(dogMap); // 更新狗狗 冷却/参战状态
-                }
-            }
-
-            userDogService.updateBatchById(matchList);
-            matchList = new ArrayList<>();
-            List<UserDogVo> dogVoList = matcherQueue.peek();
-            if (dogVoList == null) {
-                worldStatus = 1;
-            } else {
-                worldStatus = 0;
-            }
-            gameStatus = 0;
-            currentSecond = 0;
-            isHavePlay = false;
-            return;
-        }
+//        if (matchSecondsTotal <= matchSecondsCurrent && matchList.size() < 6){
+//
+//            System.out.println("匹配失败 返还用户 体力 和 AGS");
+//            System.out.println(matchList);
+//            failList.addAll(matchList);
+//            matchSecondsCurrent = 0;
+//
+//            Integer brawnNum = configService.queryByIntKey("game_reduce_brawn");
+//            Integer asg = configService.queryByIntKey("game_reduce_asg");
+//
+//            // 返还报名费用到邮箱
+//            for (int i = 0; i < matchList.size(); i++){
+//                // 判断是否人机狗狗
+//                if (matchList.get(i).getId() > 0){
+//
+//                    MailVo mailVo = new MailVo();
+//                    mailVo.setType(2);
+//                    mailVo.setMailTitle("匹配失败返还报名费");
+//                    mailVo.setMailContent("匹配失败返还报名费：" + asg);
+//                    mailVo.setAwardType(1);
+//                    if (brawnNum > 0) mailVo.setBrawnNum(brawnNum);
+//                    if (brawnNum > 0 && asg > 0){
+//                        mailVo.setImgName("jinbi,jingli");
+//                        mailVo.setGameAward(asg + "," + brawnNum);
+//                    }
+//                    if (brawnNum <= 0 && asg > 0){
+//                        mailVo.setImgName("jinbi");
+//                        mailVo.setGameAward(asg.toString());
+//                    }
+//                    mailVo.setAwardNum(asg);
+//                    mailVo.setIsAttribute(0);
+//                    mailVo.setIsReceive(0);
+//                    mailVo.setUserId(matchList.get(i).getUserId());
+//                    mailVo.setCreateTime(new Date());
+//                    mailService.save(mailVo);
+//
+//                    Map map = new HashMap();
+//                    map.put("userId", matchList.get(i).getUserId());
+//                    map.put("isHaveUnread", 1);
+//                    userService.update(map);
+//
+//                    Map dogMap = new HashMap();
+//                    dogMap.put("dogId", matchList.get(i).getId());
+//                    dogMap.put("isCool", 0);
+//                    dogMap.put("isGame", 0);
+//                    userDogService.update(dogMap); // 更新狗狗 冷却/参战状态
+//                }
+//            }
+//
+//            userDogService.updateBatchById(matchList);
+//            matchList = new ArrayList<>();
+//            List<UserDogVo> dogVoList = matcherQueue.peek();
+//            if (dogVoList == null) {
+//                worldStatus = 1;
+//            } else {
+//                worldStatus = 0;
+//            }
+//            gameStatus = 0;
+//            currentSecond = 0;
+//            isHavePlay = false;
+//            return;
+//        }
 
         // 匹配秒数大于匹配总秒数（暂定：60秒） 并且本场比赛狗狗数量小于6 匹配人机狗狗
-//        if (matchSecondsCurrent >= matchSecondsTotal && matchList.size() < 6){
-//
-//            tempId = 0;
-//            //创建随机数对象
-//            Random r = new Random();
-//            List<Integer> battle = null;
-//
-//            battle = new ArrayList<>();
-//            //判断集合的长度是不是小于4
-//            while (battle.size() < 6) {
-//                //产生一个随机数，添加到集合
-//                int number = r.nextInt((oneDogFightingMax.intValue() + 200)) % ((oneDogFightingMax.intValue() + 200) - 500 + 1) + 500;
-//                battle.add(number);
-//            }
-//
-//            int attributeNum = matchList.get(0).getSpeed() + matchList.get(0).getMood() + matchList.get(0).getEndurance() + matchList.get(0).getLuck();
-//            for (int i = matchList.size(); i < 6; i++){
-//                tempId --;
-//                matchList.add(createDog(tempId, new BigDecimal(battle.get(i)), attributeNum, matchList.get(0).getDogGrade()));
-//                System.out.println("进行人机匹配" + i);
-//            }
-//
-//            countRanking();
-//
-//            // 组队完成 生成对战狗狗list 添加到队列
-//            synchronized (matcherQueue) {
-//                matcherQueue.offer(matchList);
-//                matcherQueue.notify();
-//            }
-//
-//            // 组队完成 生成局号 添加到队列
-//            synchronized (gameNumQueue) {
-//                gameNumQueue.offer(CommonUtil.generateOrderNumber());
-//                gameNumQueue.notify();
-//            }
-//
-//            System.out.println("人机匹配完毕,共 " + matchList.size() + "条 狗狗");
-//            matchSecondsCurrent = 0;
-//            matchList = new ArrayList<>();
-//        }
+        if (matchSecondsCurrent >= matchSecondsTotal && matchList.size() < 6){
+
+            tempId = 0;
+            //创建随机数对象
+            Random r = new Random();
+            List<Integer> battle = null;
+
+            battle = new ArrayList<>();
+            //判断集合的长度是不是小于4
+            while (battle.size() < 6) {
+                //产生一个随机数，添加到集合
+                int number = r.nextInt((oneDogFightingMax.intValue() + 200)) % ((oneDogFightingMax.intValue() + 200) - 500 + 1) + 500;
+                battle.add(number);
+            }
+
+            int attributeNum = matchList.get(0).getSpeed() + matchList.get(0).getMood() + matchList.get(0).getEndurance() + matchList.get(0).getLuck();
+            for (int i = matchList.size(); i < 6; i++){
+                tempId --;
+                matchList.add(createDog(tempId, new BigDecimal(battle.get(i)), attributeNum, matchList.get(0).getDogGrade()));
+                System.out.println("进行人机匹配" + i);
+            }
+
+            countRanking();
+
+            // 组队完成 生成对战狗狗list 添加到队列
+            synchronized (matcherQueue) {
+                matcherQueue.offer(matchList);
+                matcherQueue.notify();
+            }
+
+            // 组队完成 生成局号 添加到队列
+            synchronized (gameNumQueue) {
+                gameNumQueue.offer(CommonUtil.generateOrderNumber());
+                gameNumQueue.notify();
+            }
+
+            System.out.println("人机匹配完毕,共 " + matchList.size() + "条 狗狗");
+            matchSecondsCurrent = 0;
+            matchList = new ArrayList<>();
+        }
 
     }
 

@@ -23,4 +23,6 @@ public interface ApiUserForageMapper extends BaseDao<UserForageVo>{
     int deleteByUser(@Param("userId") Long userId, @Param("id") Integer id);
 
     int updateNFT(Map<String, Object> map);
+
+    int updateByNFT(Map<String, Object> map);
 }

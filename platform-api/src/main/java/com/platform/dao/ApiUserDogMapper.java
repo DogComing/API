@@ -41,4 +41,6 @@ public interface ApiUserDogMapper extends BaseDao<UserDogVo>{
     int deleteByUser(@Param("userId")Long userId, @Param("dogId") Integer dogId);
 
     int updateNFT(Map<String, Object> map);
+
+    int updateByNFT(Map<String, Object> map);
 }

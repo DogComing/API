@@ -86,10 +86,16 @@ public class NftVo implements Serializable {
     private String attributes;
 
     /**
-     * 铸造NFT 【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备】
+     * 铸造NFT 【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备 7：珍宝】
      */
-    @ApiModelProperty("铸造NFT 【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备】")
+    @ApiModelProperty("铸造NFT 【1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备 7：珍宝】")
     private Integer type;
+
+    /**
+     * 珍宝类型 【1：饲料 2：捕捉 3：战斗】
+     */
+    @ApiModelProperty("珍宝类型 【1：饲料 2：捕捉 3：战斗】")
+    private Integer gemType;
 
     /**
      * 创建时间

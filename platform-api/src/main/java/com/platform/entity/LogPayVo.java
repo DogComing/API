@@ -36,7 +36,7 @@ public class LogPayVo implements Serializable {
     private BigDecimal money;
 
     /**
-     * 支付类型 【1：购买30天签到、2：购买精力、3：购买捕捉装备】
+     * 支付类型 【1：购买30天签到、2：购买精力、3：购买捕捉装备 4:铸造NFT】
      */
     @ApiModelProperty("支付类型")
     private Integer type;

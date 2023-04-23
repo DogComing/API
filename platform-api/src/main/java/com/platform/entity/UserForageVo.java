@@ -5,16 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @program: platform
- * @description: 用户饲料实体类
- * @author: Yuan
- * @create: 2020-09-09 10:20
- **/
+ * 用户饲料实体类
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel("用户饲料实体类")
@@ -25,6 +23,9 @@ public class UserForageVo implements Serializable {
     @ApiModelProperty("自增主键Id")
     private Integer id;
 
+    /**
+     * 饲料等级
+     */
     @ApiModelProperty("饲料等级")
     private Integer grade;
 
@@ -130,4 +131,27 @@ public class UserForageVo implements Serializable {
      * 丢弃类型 1：宠物、2：道具、3：饲料、4：野生、5：捕捉装备 6：对战装备
      */
     private Integer discardType;
+
+    /**
+     * 饲料类型【string类型 文字展示】
+     * 1:普通饲料 2:珍宝饲料
+     */
+    private String forageTypeTxt;
+
+    public String getForageTypeTxt() {
+
+        if (null != forageType && forageType != 0 && StringUtils.isEmpty(forageTypeTxt)) {
+
+            forageTypeTxt = "";
+            switch (forageType) {
+                case 1:
+                    forageTypeTxt = "普通饲料";
+                    break;
+                case 2:
+                    forageTypeTxt = "珍宝饲料";
+                    break;
+            }
+        }
+        return forageTypeTxt;
+    }
 }

@@ -35,12 +35,10 @@
     </resultMap>
 
     <select id="queryList" resultMap="userDogMap">
-        SELECT * FROM oil_user_dog
-        <where>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-        </where>
+        SELECT * FROM oil_user_dog where is_draw = 0
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}, fighting_num desc
@@ -55,41 +53,37 @@
     </select>
 
     <select id="queryTotal" resultType="int">
-        SELECT count(1) FROM oil_user_dog
-        <where>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-        </where>
+        SELECT count(1) FROM oil_user_dog where is_draw = 0
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
     </select>
 
     <select id="queryUserDogInfo" resultMap="userDogMap">
-        SELECT * FROM oil_user_dog
-        <where>
-            <if test="dogId != null">
-                and id = #{dogId}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-            <if test="isCool != null">
-                and is_cool = #{isCool}
-            </if>
-            <if test="isGame != null">
-                and is_game = #{isGame}
-            </if>
-            <if test="isUse != null">
-                and is_use = #{isUse}
-            </if>
-        </where>
+        SELECT * FROM oil_user_dog where is_draw = 0
+        <if test="dogId != null">
+            and id = #{dogId}
+        </if>
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+        <if test="isCool != null">
+            and is_cool = #{isCool}
+        </if>
+        <if test="isGame != null">
+            and is_game = #{isGame}
+        </if>
+        <if test="isUse != null">
+            and is_use = #{isUse}
+        </if>
     </select>
 
     <select id="queryAllListByUser" resultMap="userDogMap">
-        SELECT * FROM oil_user_dog where user_id = #{userId} order by is_cool asc, fighting_num desc
+        SELECT * FROM oil_user_dog where is_draw = 0 and user_id = #{userId} order by is_cool asc, fighting_num desc
     </select>
 
     <select id="queryObjectByUser" resultMap="userDogMap">
-        SELECT * FROM oil_user_dog where user_id = #{userId} and id = #{dogId}
+        SELECT * FROM oil_user_dog where is_draw = 0 and user_id = #{userId} and id = #{dogId}
     </select>
 
     <update id="update" parameterType="java.util.Map">
@@ -150,7 +144,7 @@
     </insert>
 
     <select id="allList" resultMap="userDogMap">
-        select * from oil_user_dog where 1 = 1 and user_id = #{userId} order by dog_breed desc,fighting_num desc
+        select * from oil_user_dog where 1 = 1 and is_draw = 0 and user_id = #{userId} order by dog_breed desc,fighting_num desc
     </select>
 
     <update id="updateBatchIsUse">
@@ -169,7 +163,7 @@
     </update>
 
     <select id="queryListByCool" resultMap="userDogMap">
-        select * from oil_user_dog where 1 = 1 and is_cool = #{isCool}
+        select * from oil_user_dog where 1 = 1 and is_draw = 0 and is_cool = #{isCool}
     </select>
 
     <update id="updateCoolStatus">
@@ -190,6 +184,16 @@
             <if test="updateTime != null">`update_time` = #{updateTime}</if>
         </set>
         where id = #{id} and user_id = #{userId}
+    </update>
+
+    <update id="updateByNFT" parameterType="java.util.Map">
+        update oil_user_dog
+        <set>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where nft_id = #{nftId}
     </update>
 
 </mapper>

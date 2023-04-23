@@ -19,12 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @program: platform
- * @description: 用户捕捉道具接口
- * @author: Yuan
- * @create: 2020-08-13 17:34
- **/
+
 @Api(tags = "用户捕捉道具接口")
 @RestController
 @RequestMapping("/api/catch/equip")
@@ -37,6 +32,11 @@ public class ApiCatchEquipController extends ApiBaseAction {
 
     /**
      * 捕捉道具列表【每次请求10条】
+     * @param loginUser
+     * @param catchType 捕捉类别【1：抛接  2：藏食  3：啃咬  4：发声】
+     * @param page 第几页
+     * @param size 每页条数
+     * @return
      */
     @IgnoreAuth
     @ApiOperation(value = "捕捉道具列表")
@@ -85,6 +85,9 @@ public class ApiCatchEquipController extends ApiBaseAction {
 
     /**
      * 捕捉道具详情
+     * @param loginUser
+     * @param id 装备id
+     * @return
      */
     @IgnoreAuth
     @ApiOperation(value = " 捕捉道具详情")
@@ -103,6 +106,9 @@ public class ApiCatchEquipController extends ApiBaseAction {
 
     /**
      * 使用捕捉道具
+     * @param loginUser
+     * @param id 装备id
+     * @return
      */
     @IgnoreAuth
     @ApiOperation(value = " 使用捕捉道具")
@@ -129,6 +135,9 @@ public class ApiCatchEquipController extends ApiBaseAction {
 
     /**
      * 卸下捕捉道具
+     * @param loginUser
+     * @param id 装备id
+     * @return
      */
     @IgnoreAuth
     @ApiOperation(value = " 卸下捕捉道具")
@@ -154,6 +163,8 @@ public class ApiCatchEquipController extends ApiBaseAction {
 
     /**
      * 获取当前使用中的道具
+     * @param loginUser
+     * @return
      */
     @IgnoreAuth
     @ApiOperation(value = " 获取当前使用中的道具")

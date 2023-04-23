@@ -86,6 +86,8 @@ public class ApiUserCatchController extends ApiBaseAction {
 
     /**
      * 捕捉接口
+     * @param loginUser
+     * @return
      */
     @ApiOperation(value = "捕捉接口")
     @PostMapping(value = "catch")
@@ -218,8 +220,10 @@ public class ApiUserCatchController extends ApiBaseAction {
 
     /**
      * 捕捉 狗狗 成功
-     * @param mapId
-     * @param attributeNum
+     * @param mapId 地图ID
+     * @param userId 用户userId
+     * @param attributeNum 宠物速度、心情、耐力、幸运总值
+     * @return
      */
     private UserDogVo receiveDog(Integer mapId, Long userId, Integer attributeNum){
 
@@ -287,9 +291,9 @@ public class ApiUserCatchController extends ApiBaseAction {
 
     /**
      * 捕捉 野生 成功
-     * @param userId
-     * @param mapId
-     * @param awardNum
+     * @param userId 用户id
+     * @param mapId 地图ID
+     * @param awardNum 奖励数量
      * @return
      */
     private UserWildVo receiveWild(Long userId, Integer mapId, Integer awardNum){

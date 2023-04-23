@@ -29,4 +29,6 @@ public interface ApiUserCatchEquipMapper extends BaseDao<UserCatchEquipVo> {
     int updateNFT(Map<String, Object> map);
 
     int updateBatchIsUse(@Param("userId") Long userId, @Param("catchType") Integer catchType);
+
+    int updateByNFT(Map<String, Object> map);
 }

@@ -28,16 +28,16 @@
 
     <!--查询某个对战装备详情-->
     <select id="queryObject" resultMap="fightMap">
-        select * from oil_user_fight_equip where id = #{value}
+        select * from oil_user_fight_equip where is_draw = 0 and id = #{value}
     </select>
 
     <!--查询所有对战道具-->
     <select id="allFightEquip" resultMap="fightMap">
-        select * from oil_user_fight_equip where 1 = 1
+        select * from oil_user_fight_equip where 1 = 1 and is_draw = 0
     </select>
 
     <select id="queryObjectByUser" resultMap="fightMap">
-        select * from oil_user_fight_equip where id = #{id} and user_id = #{userId}
+        select * from oil_user_fight_equip where is_draw = 0 and id = #{id} and user_id = #{userId}
     </select>
 
     <insert id="save" parameterType="com.platform.entity.UserFightEquipVo" useGeneratedKeys="true" keyProperty="id">
@@ -84,12 +84,11 @@
     </update>
 
     <select id="allList" resultMap="fightMap">
-        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and user_id = #{userId} order by grade desc,durability_residue desc
+        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,durability_residue desc
     </select>
 
     <select id="queryListByMap" resultMap="fightMap">
-        select * from oil_user_fight_equip
-        where 1 = 1 and fight_num > 0
+        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and is_draw = 0
         <if test="isGem != null">
             and `is_gem` = #{isGem}
         </if>
@@ -121,5 +120,15 @@
     <delete id="deleteByUser">
         delete from oil_user_fight_equip where user_id = #{userId} and id = #{id}
     </delete>
+
+    <update id="updateByNFT" parameterType="java.util.Map">
+        update oil_user_fight_equip
+        <set>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where nft_id = #{nftId}
+    </update>
 
 </mapper>

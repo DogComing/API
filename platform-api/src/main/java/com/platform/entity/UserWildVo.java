@@ -10,11 +10,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @program: platform
- * @description: 用户野生实体类
- * @author: Yuan
- * @create: 2020-08-22 16:42
- **/
+ * 用户野生实体类
+ */
 @Data
 @ApiModel("用户野生实体类")
 public class UserWildVo implements Serializable {
@@ -24,6 +21,9 @@ public class UserWildVo implements Serializable {
     @ApiModelProperty("自增主键Id")
     private Integer id;
 
+    /**
+     * 野生等级
+     */
     @ApiModelProperty("野生等级")
     private Integer grade;
 

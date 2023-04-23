@@ -37,4 +37,6 @@ public class ApiUserPropService {
     public int deleteByUser(Long userId, Integer id){ return userPropMapper.deleteByUser(userId, id); }
 
     public int updateNFT(Map<String, Object> map) { return userPropMapper.updateNFT(map); }
+
+    public int updateByNFT(Map<String, Object> map) { return userPropMapper.updateByNFT(map); }
 }

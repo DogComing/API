@@ -14,6 +14,7 @@
         <result property="jsonUrl" column="json_url"/>
         <result property="attributes" column="attributes"/>
         <result property="type" column="type"/>
+        <result property="gemType" column="gem_type"/>
         <result property="isFreeze" column="is_freeze"/>
         <result property="isDraw" column="is_draw"/>
         <result property="isDelete" column="is_delete"/>
@@ -43,6 +44,7 @@
             `json_url`,
             `attributes`,
             `type`,
+            `gem_type`,
             `create_time`
         )
         values
@@ -56,6 +58,7 @@
             #{jsonUrl},
             #{attributes},
             #{type},
+            #{gemType},
             #{createTime}
         )
     </insert>

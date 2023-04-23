@@ -26,20 +26,18 @@
 
     <!--查询某个饲料详情-->
     <select id="queryObject" resultMap="forageMap">
-		select * from oil_user_forage where id = #{value}
+		select * from oil_user_forage where is_draw = 0 and id = #{value}
 	</select>
 
     <!--查询饲料列表-->
     <select id="queryList" resultMap="forageMap">
-        select * from oil_user_forage
-        <where>
-            <if test="forageType != null">
-                AND forage_type = #{forageType}
-            </if>
-            <if test="userId != null">
-                AND user_id = #{userId}
-            </if>
-        </where>
+        select * from oil_user_forage where is_draw = 0
+        <if test="forageType != null">
+            AND forage_type = #{forageType}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
@@ -55,20 +53,18 @@
 
     <!--查询饲料总数-->
     <select id="queryTotal" resultType="int">
-        select count(1) from oil_user_forage
-        <where>
-            <if test="forageType != null">
-                AND forage_type = #{forageType}
-            </if>
-            <if test="userId != null">
-                AND user_id = #{userId}
-            </if>
-        </where>
+        select count(1) from oil_user_forage where is_draw = 0
+        <if test="forageType != null">
+            AND forage_type = #{forageType}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
     </select>
 
     <!--查询某个饲料详情-->
     <select id="queryObjectByUser" resultMap="forageMap">
-        select * from oil_user_forage where id = #{id} and user_id = #{userId}
+        select * from oil_user_forage where is_draw = 0 and id = #{id} and user_id = #{userId}
     </select>
 
     <insert id="save" parameterType="com.platform.entity.UserForageVo" useGeneratedKeys="true" keyProperty="id">
@@ -119,11 +115,11 @@
     </update>
 
     <select id="allList" resultMap="forageMap">
-        select * from oil_user_forage where 1 = 1 and forage_num > 0 and user_id = #{userId} order by grade desc,fighting_num desc
+        select * from oil_user_forage where 1 = 1 and forage_num > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,fighting_num desc
     </select>
 
     <select id="queryListByMap" resultMap="forageMap">
-        select * from oil_user_forage where 1 = 1 and forage_num > 0
+        select * from oil_user_forage where 1 = 1 and forage_num > 0 and is_draw = 0
         <if test="forageType != null">
             and `forage_type` = #{forageType}
         </if>
@@ -146,6 +142,16 @@
             <if test="updateTime != null">`update_time` = #{updateTime}</if>
         </set>
         where id = #{id} and user_id = #{userId}
+    </update>
+
+    <update id="updateByNFT" parameterType="java.util.Map">
+        update oil_user_forage
+        <set>
+            <if test="isDraw != null">`is_draw` = #{isDraw},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+        </set>
+        where nft_id = #{nftId}
     </update>
 
 </mapper>

@@ -38,6 +38,13 @@ public interface ApiUserMapper extends BaseDao<UserVo> {
     UserVo queryByOpenId(@Param("openId") String openId);
 
     /**
+     * 根据钱包地址查询用户
+     * @param address
+     * @return
+     */
+    UserVo queryByAddress(@Param("openId") String address);
+
+    /**
      * 根据phone查询用户
      * @param phone
      * @return

@@ -62,4 +62,6 @@ public class ApiUserDogService {
     public int deleteByUser(Long userId, Integer dogId) { return userDogMapper.deleteByUser(userId, dogId); }
 
     public int updateNFT(Map<String, Object> map) { return userDogMapper.updateNFT(map); }
+
+    public int updateByNFT(Map<String, Object> map) { return userDogMapper.updateByNFT(map); }
 }

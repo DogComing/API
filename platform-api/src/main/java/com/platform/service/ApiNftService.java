@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ApiNftService {
@@ -22,6 +23,8 @@ public class ApiNftService {
      * @return
      */
     public NftVo queryObjectByUser(Long userId, Long nftId) { return nftMapper.queryObjectByUser(userId, nftId); }
+
+    public NftVo queryObjectByNft(Long nftId) { return nftMapper.queryObjectByNft(nftId); }
 
     /**
      * 查询所有NFT
@@ -40,6 +43,12 @@ public class ApiNftService {
      * @param nftVo
      */
     public int update(NftVo nftVo) { return nftMapper.update(nftVo); }
+
+    /**
+     * 更新NFT
+     * @param map
+     */
+    public int updateByMap(Map<String, Object> map) { return nftMapper.updateByMap(map); }
 
     /**
      * 删除NFT
