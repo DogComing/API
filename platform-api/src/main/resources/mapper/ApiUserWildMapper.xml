@@ -66,7 +66,7 @@
     </select>
 
     <select id="queryObjectByUser" resultMap="wildMap">
-        select * from oil_user_wild where id = #{id} and user_id = #{userId} and is_draw = 0
+        select * from oil_user_wild where id = #{id} and user_id = #{userId} and is_draw = 0 and durability_residue > 0
     </select>
 
     <insert id="save" parameterType="com.platform.entity.UserWildVo" useGeneratedKeys="true" keyProperty="id">
@@ -117,17 +117,17 @@
     <update id="makeUseOf" parameterType="java.util.Map">
         update oil_user_wild
         <set>
-            <if test="useNum >= 0">`wild_num` = wild_num - #{useNum}</if>
+            <if test="useNum >= 0">`durability_residue` = durability_residue - #{useNum}</if>
         </set>
-        where wild_id = #{wildId} and user_id = #{userId} and wild_num > 0
+        where id = #{id} and user_id = #{userId} and durability_residue > 0
     </update>
 
     <select id="allList" resultMap="wildMap">
-        select * from oil_user_wild where 1 = 1 and wild_num > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,fighting_num desc
+        select * from oil_user_wild where 1 = 1 and wild_num > 0 and durability_residue > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,fighting_num desc
     </select>
 
     <select id="allListByFight" resultMap="wildMap">
-        select * from oil_user_wild where 1 = 1 and wild_num > 0 and is_draw = 0 and user_id = #{userId} and is_fight = #{isFight}
+        select * from oil_user_wild where 1 = 1 and wild_num > 0 and durability_residue > 0 and is_draw = 0 and user_id = #{userId} and is_fight = #{isFight}
     </select>
 
     <delete id="deleteByUser">

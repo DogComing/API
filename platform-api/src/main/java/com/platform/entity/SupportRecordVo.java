@@ -59,6 +59,10 @@ public class SupportRecordVo implements Serializable {
     @ApiModelProperty("下注数量")
     private Integer pourNum;
 
+    @JsonIgnore
+    @ApiModelProperty("钱包地址")
+    private String address;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 

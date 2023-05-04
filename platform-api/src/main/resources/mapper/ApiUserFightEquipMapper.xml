@@ -84,11 +84,11 @@
     </update>
 
     <select id="allList" resultMap="fightMap">
-        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,durability_residue desc
+        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and durability_residue > 0 and is_draw = 0 and user_id = #{userId} order by grade desc,durability_residue desc
     </select>
 
     <select id="queryListByMap" resultMap="fightMap">
-        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and is_draw = 0
+        select * from oil_user_fight_equip where 1 = 1 and fight_num > 0 and durability_residue > 0 and is_draw = 0
         <if test="isGem != null">
             and `is_gem` = #{isGem}
         </if>

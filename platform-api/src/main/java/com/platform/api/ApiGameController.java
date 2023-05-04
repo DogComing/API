@@ -16,15 +16,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.platform.config.ConstantConfig.*;
 
-/**
- * @program: platform
- * @description: 狗狗比赛接口
- * @author: Yuan
- * @create: 2020-08-13 17:34
- **/
+
 @Api(tags = "狗狗比赛接口")
 @RestController
 @RequestMapping("/api/game")
@@ -94,6 +92,7 @@ public class ApiGameController extends ApiBaseAction {
             supportRecordVo.setPourNum(stakeOneVo.getStakeNumber());
             supportRecordVo.setCreateTime(new Date());
             supportRecordVo.setOdds(countOneStake(sum).get(Integer.parseInt(stakeOneVo.getDogNumber().toString()) - 1));
+            supportRecordVo.setAddress(loginUser.getAddress());
             supportRecordService.save(supportRecordVo);
 
             // 给对应狗狗增加士气
@@ -159,7 +158,8 @@ public class ApiGameController extends ApiBaseAction {
                 supportRecordVo.setSelectType(2);
                 supportRecordVo.setPourNum(Integer.parseInt(oneMap.get("stakeNumber").toString()));
                 supportRecordVo.setCreateTime(new Date());
-                supportRecordVo.setOdds(countOdds(sum, dogNumList));
+                supportRecordVo.setOdds(countMingCiOdds(sum, dogNumList));
+                supportRecordVo.setAddress(loginUser.getAddress());
                 supportRecordService.save(supportRecordVo);
 
 //            jackpot += Integer.parseInt(oneMap.get("stakeNumber").toString()) * 2 * 100;
@@ -191,7 +191,8 @@ public class ApiGameController extends ApiBaseAction {
                 supportRecordVo.setSelectType(3);
                 supportRecordVo.setPourNum(Integer.parseInt(twoMap.get("stakeNumber").toString()));
                 supportRecordVo.setCreateTime(new Date());
-                supportRecordVo.setOdds(countOdds(sum, dogNumList));
+                supportRecordVo.setOdds(countMingCiOdds(sum, dogNumList));
+                supportRecordVo.setAddress(loginUser.getAddress());
                 supportRecordService.save(supportRecordVo);
 
 //            jackpot += Integer.parseInt(twoMap.get("stakeNumber").toString()) * 3 * 100;
@@ -227,7 +228,8 @@ public class ApiGameController extends ApiBaseAction {
                 supportRecordVo.setSelectType(4);
                 supportRecordVo.setPourNum(Integer.parseInt(threeMap.get("stakeNumber").toString()));
                 supportRecordVo.setCreateTime(new Date());
-                supportRecordVo.setOdds(countOdds(sum, dogNumList));
+                supportRecordVo.setOdds(countMingCiOdds(sum, dogNumList));
+                supportRecordVo.setAddress(loginUser.getAddress());
                 supportRecordService.save(supportRecordVo);
 
 //            jackpot += Integer.parseInt(threeMap.get("stakeNumber").toString()) * 4 * 100;
@@ -305,7 +307,8 @@ public class ApiGameController extends ApiBaseAction {
                 supportRecordVo.setSelectType(2);
                 supportRecordVo.setPourNum(Integer.parseInt(oneMap.get("stakeNumber").toString()));
                 supportRecordVo.setCreateTime(new Date());
-                supportRecordVo.setOdds(returnOdds(sum, dogNumList));
+                supportRecordVo.setOdds(countBaoWeiOdds(sum, dogNumList));
+                supportRecordVo.setAddress(loginUser.getAddress());
                 supportRecordService.save(supportRecordVo);
 
 //            jackpot += Integer.parseInt(oneMap.get("stakeNumber").toString()) * 100 * 2;
@@ -337,7 +340,8 @@ public class ApiGameController extends ApiBaseAction {
                 supportRecordVo.setSelectType(3);
                 supportRecordVo.setPourNum(Integer.parseInt(twoMap.get("stakeNumber").toString()));
                 supportRecordVo.setCreateTime(new Date());
-                supportRecordVo.setOdds(returnOdds(sum, dogNumList));
+                supportRecordVo.setOdds(countBaoWeiOdds(sum, dogNumList));
+                supportRecordVo.setAddress(loginUser.getAddress());
                 supportRecordService.save(supportRecordVo);
 
 //            jackpot += Integer.parseInt(twoMap.get("stakeNumber").toString()) * 100 * 3;
@@ -373,7 +377,8 @@ public class ApiGameController extends ApiBaseAction {
                 supportRecordVo.setSelectType(4);
                 supportRecordVo.setPourNum(Integer.parseInt(threeMap.get("stakeNumber").toString()));
                 supportRecordVo.setCreateTime(new Date());
-                supportRecordVo.setOdds(returnOdds(sum, dogNumList));
+                supportRecordVo.setOdds(countBaoWeiOdds(sum, dogNumList));
+                supportRecordVo.setAddress(loginUser.getAddress());
                 supportRecordService.save(supportRecordVo);
 
 //            jackpot += Integer.parseInt(threeMap.get("stakeNumber").toString()) * 100;
@@ -535,9 +540,9 @@ public class ApiGameController extends ApiBaseAction {
                     dogNumList.add(Integer.parseInt(oneMap.get("one").toString()));
                     dogNumList.add(Integer.parseInt(oneMap.get("two").toString()));
                     if (stakeMoreVo.getType() == 2){
-                        winRatioList.add(countOdds(sum, dogNumList));
+                        winRatioList.add(countMingCiOdds(sum, dogNumList));
                     } else {
-                        winRatioList.add(returnOdds(sum, dogNumList)); // 添加到结果数组
+                        winRatioList.add(countBaoWeiOdds(sum, dogNumList)); // 添加到结果数组
                     }
                 } else {
                     winRatioList.add(BigDecimal.ZERO);
@@ -549,9 +554,9 @@ public class ApiGameController extends ApiBaseAction {
                     dogNumList.add(Integer.parseInt(twoMap.get("two").toString()));
                     dogNumList.add(Integer.parseInt(twoMap.get("three").toString()));
                     if (stakeMoreVo.getType() == 2){
-                        winRatioList.add(countOdds(sum, dogNumList));
+                        winRatioList.add(countMingCiOdds(sum, dogNumList));
                     } else {
-                        winRatioList.add(returnOdds(sum, dogNumList)); // 添加到结果数组
+                        winRatioList.add(countBaoWeiOdds(sum, dogNumList)); // 添加到结果数组
                     }
                 } else {
                     winRatioList.add(BigDecimal.ZERO);
@@ -564,9 +569,9 @@ public class ApiGameController extends ApiBaseAction {
                     dogNumList.add(Integer.parseInt(threeMap.get("three").toString()));
                     dogNumList.add(Integer.parseInt(threeMap.get("four").toString()));
                     if (stakeMoreVo.getType() == 2){
-                        winRatioList.add(countOdds(sum, dogNumList));
+                        winRatioList.add(countMingCiOdds(sum, dogNumList));
                     } else {
-                        winRatioList.add(returnOdds(sum, dogNumList)); // 添加到结果数组
+                        winRatioList.add(countBaoWeiOdds(sum, dogNumList)); // 添加到结果数组
                     }
                 } else {
                     winRatioList.add(BigDecimal.ZERO);
@@ -585,7 +590,7 @@ public class ApiGameController extends ApiBaseAction {
 
     /**
      * 计算单压每个狗狗的赔率
-     * @param sumFight
+     * @param sumFight 当前所有参赛狗狗总战力
      * @return
      */
     private List<BigDecimal> countOneStake(BigDecimal sumFight){
@@ -599,24 +604,38 @@ public class ApiGameController extends ApiBaseAction {
         return winRatioList;
     }
 
-    private BigDecimal returnOdds(BigDecimal sumFight, List<Integer> dogNumList){
+    /**
+     * 计算包围赔率
+     * @param sumFight 当前所有参赛狗狗总战力
+     * @param dogNumList 狗狗赛道号列表
+     * @return
+     */
+    private BigDecimal countBaoWeiOdds(BigDecimal sumFight, List<Integer> dogNumList){
 
         BigDecimal winNum = BigDecimal.ZERO;
-        List<List> composeList = getArrange(dogNumList, dogNumList.size(), null, null);
-        for (int i = 0; i < composeList.size(); i++){
-            winNum = winNum.add(countMoreStake(sumFight, composeList.get(i)));
+        List<String> newList = transform(dogNumList, String::valueOf);
+        List<String> tempStr = permutationNoRepeat(newList, newList.size());
+
+        for (int i = 0; i < tempStr.size(); i++){
+            char ss[] = tempStr.get(i).toCharArray();
+            List<Integer> tempInt = new ArrayList<>();
+            for (int j = 0; j < ss.length; j++){
+                tempInt.add(Integer.parseInt(String.valueOf(ss[j])));
+            }
+            winNum = winNum.add(countMoreStake(sumFight, tempInt));
         }
+
         BigDecimal result = BigDecimal.ONE.divide(winNum, 10, BigDecimal.ROUND_DOWN).multiply(new BigDecimal(0.8)); // 赔率
         return result.setScale(1, RoundingMode.HALF_UP); // 保留两位小数
     }
 
     /**
      * 计算名次赔率
-     * @param sumFight
-     * @param dogNumList
+     * @param sumFight 当前所有参赛狗狗总战力
+     * @param dogNumList 狗狗赛道号列表
      * @return
      */
-    private BigDecimal countOdds(BigDecimal sumFight, List<Integer> dogNumList){
+    private BigDecimal countMingCiOdds(BigDecimal sumFight, List<Integer> dogNumList){
 
         BigDecimal winNum = countMoreStake(sumFight, dogNumList);
         BigDecimal result = BigDecimal.ONE.divide(winNum, 10, BigDecimal.ROUND_DOWN).multiply(new BigDecimal(0.8)); // 赔率
@@ -702,42 +721,31 @@ public class ApiGameController extends ApiBaseAction {
     }
 
     /**
-     * 循环递归获取给定数组元素(无重复)的全排列
-     *
-     * @param oriList 原始数组
-     * @param oriLen 原始数组size
-     * @param arrayCombResult 数组排列结果集，可传null或空Set
-     * @param preList 记录排列参数，可传null或空List
-     * @return 排列结果
+     * 无重复排列组合
+     * @param list
+     * @param length
+     * @return
      */
-    public List<List> getArrange(List oriList, int oriLen, List<List> arrayCombResult, List preList){
+    public static List<String> permutationNoRepeat(List<String> list, int length) {
 
-        if (oriList == null){
-            return arrayCombResult;
+        Stream<String> stream = list.stream().distinct();
+        for (int n = 1; n < length; n++) {
+            stream = stream.flatMap(i -> list.stream().filter(j -> !i.contains(j)).map(j -> i.concat(j)));
         }
+        return stream.collect(Collectors.toList());
+    }
 
-        if (arrayCombResult == null){
-            arrayCombResult = new ArrayList<>();
-        }
+    /**
+     *
+     * @param list
+     * @param function
+     * @param <T>
+     * @param <U>
+     * @return
+     */
+    public static <T, U> List<U> transform(List<T> list, Function<T, U> function) {
 
-        if (preList == null){
-            preList = new ArrayList();
-        }
-
-        for (int i = 0; i < oriList.size(); i++){
-            while(preList.size() > 0 && oriList.size() + preList.size() > oriLen){
-                preList.remove(preList.size() - 1);
-            }
-            List arrList = new ArrayList(oriList);
-            preList.add(arrList.get(i));
-            arrList.remove(i);
-            if (arrList.isEmpty()){
-                arrayCombResult.add(preList);
-            }else {
-                getArrange(arrList, oriLen, arrayCombResult, preList);
-            }
-        }
-        return arrayCombResult;
+        return list.stream().map(function).collect(Collectors.toList());
     }
 
 }

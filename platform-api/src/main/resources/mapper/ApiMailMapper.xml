@@ -19,17 +19,16 @@
         <result property="brawnNum" column="brawn_num"/>
         <result property="gameAward" column="game_award"/>
         <result property="type" column="type"/>
+        <result property="isDelete" column="is_delete"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <select id="queryList" resultMap="mailMap">
-        SELECT * FROM oil_mail
-        <where>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-        </where>
+        SELECT * FROM oil_mail where is_delete = 0
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
@@ -44,12 +43,10 @@
     </select>
 
     <select id="queryTotal" resultType="int">
-        SELECT count(1) FROM oil_mail
-        <where>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-        </where>
+        SELECT count(1) FROM oil_mail where is_delete = 0
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
     </select>
 
     <select id="queryObject" resultMap="mailMap">
@@ -71,6 +68,7 @@
             `game_award`,
             `is_receive`,
             `type`,
+            `is_delete`,
             `create_time`
 		)
 		values
@@ -87,6 +85,7 @@
             #{gameAward},
             #{isReceive},
             #{type},
+            #{isDelete},
             #{createTime}
 		)
 	</insert>
@@ -102,22 +101,20 @@
     </update>
 
     <select id="allList" resultMap="mailMap">
-        select * from oil_mail where user_id = #{userId}
+        select * from oil_mail where is_delete = 0 and user_id = #{userId}
     </select>
 
     <select id="allListByMap" resultMap="mailMap">
-        select * from oil_mail
-        <where>
-            <if test="isRead != null">
-                and is_read = #{isRead}
-            </if>
-            <if test="isReceive != null">
-                and is_receive = #{isReceive}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-        </where>
+        select * from oil_mail where is_delete = 0
+        <if test="isRead != null">
+            and is_read = #{isRead}
+        </if>
+        <if test="isReceive != null">
+            and is_receive = #{isReceive}
+        </if>
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
     </select>
 
     <update id="updateByUser" parameterType="java.util.Map">
@@ -130,19 +127,15 @@
         where user_id = #{userId}
     </update>
 
-    <delete id="deleteByUser" parameterType="java.util.Map">
-        delete from oil_mail
-        <where>
-            <if test="isRead != null">
-                and is_read = #{isRead}
-            </if>
-            <if test="isReceive != null">
-                and is_receive = #{isReceive}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-        </where>
-    </delete>
+    <update id="deleteByUser" parameterType="java.util.Map">
+        update oil_mail
+        <set>
+            <if test="isRead != null">`is_read` = #{isRead},</if>
+            <if test="isReceive != null">`is_receive` = #{isReceive},</if>
+            <if test="updateTime != null">`update_time` = #{updateTime}</if>
+            <if test="isDelete != null">`is_delete` = #{isDelete}</if>
+        </set>
+        where user_id = #{userId}
+    </update>
 
 </mapper>

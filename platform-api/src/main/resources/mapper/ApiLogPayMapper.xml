@@ -13,6 +13,7 @@
         <result property="typeTxt" column="type_txt"/>
         <result property="currencyTxt" column="currency_txt"/>
         <result property="remarks" column="remarks"/>
+        <result property="address" column="address"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
@@ -38,6 +39,7 @@
             `type_txt`,
             `currency_txt`,
             `remarks`,
+            `address`,
             `create_time`
         )
         values
@@ -50,6 +52,7 @@
             #{typeTxt},
             #{currencyTxt},
             #{remarks},
+            #{address},
             #{createTime}
         )
     </insert>

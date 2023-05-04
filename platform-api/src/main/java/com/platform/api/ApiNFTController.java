@@ -162,6 +162,7 @@ public class ApiNFTController extends ApiBaseAction {
                 logPayVo.setCurrencyTxt("USDT");
                 logPayVo.setCreateTime(new Date());
                 logPayVo.setRemarks("成功支付" + 1 + "USDT，铸造" + nftVo.getName());
+                logPayVo.setAddress(loginUser.getAddress());
                 logPayService.save(logPayVo);
 
                 nonce = (int)((Math.random() * 9 + 1) * 1000);

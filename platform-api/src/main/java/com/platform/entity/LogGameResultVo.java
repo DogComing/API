@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -24,6 +25,12 @@ public class LogGameResultVo implements Serializable {
      */
     @ApiModelProperty("参赛用户userId")
     private Long userId;
+
+    /**
+     * 狗狗Id【dog_user表主键】
+     */
+    @ApiModelProperty("狗狗Id【dog_user表主键】")
+    private Integer dogId;
 
     /**
      * gameNum
@@ -48,6 +55,12 @@ public class LogGameResultVo implements Serializable {
      */
     @ApiModelProperty("是否真实用户（0:人机  1:真人）")
     private Integer isReal;
+
+    /**
+     * 狗狗战力
+     */
+    @ApiModelProperty("狗狗战力")
+    private BigDecimal fightingNum;
 
     @ApiModelProperty("创建时间")
     private Date createTime;

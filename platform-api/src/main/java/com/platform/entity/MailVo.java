@@ -99,6 +99,13 @@ public class MailVo implements Serializable {
     private Long userId;
 
     /**
+     * 是否是已删除邮件【0：否 1：是】
+     */
+    @JsonIgnore
+    @ApiModelProperty("是否是已删除邮件【0：否 1：是】")
+    private Integer isDelete;
+
+    /**
      * 创建时间
      */
     @ApiModelProperty("创建时间")

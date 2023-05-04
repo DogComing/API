@@ -20,12 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.*;
 
-/**
- * @program: platform
- * @description: 捕捉接口
- * @author: Yuan
- * @create: 2023-03-13 17:34
- **/
+
 @Api(tags = "捕捉接口")
 @RestController
 @RequestMapping("/api")
@@ -560,6 +555,7 @@ public class ApiUserCatchController extends ApiBaseAction {
             mailVo.setCreateTime(new Date());
             mailVo.setType(1);
             mailVo.setIsReceive(0);
+            mailVo.setIsDelete(0);
             mailService.save(mailVo);
 
             Map map = new HashMap();

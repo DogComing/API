@@ -14,7 +14,7 @@ public interface ApiUserWildMapper extends BaseDao<UserWildVo>{
 
     int receiveRewards(@Param("userId") Long userId, @Param("wildId") Integer wildId, @Param("awardNum") Integer awardNum);
 
-    void makeUseOf(@Param("userId") Long userId, @Param("wildId") Integer wildId, @Param("useNum") Integer useNum);
+    void makeUseOf(@Param("userId") Long userId, @Param("id") Integer id, @Param("useNum") Integer useNum);
 
     List<UserWildVo> allList(@Param("userId") Long userId);
 

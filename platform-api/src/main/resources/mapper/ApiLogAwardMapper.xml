@@ -16,6 +16,7 @@
         <result property="pourNum" column="pour_num"/>
         <result property="odds" column="odds"/>
         <result property="money" column="money"/>
+        <result property="address" column="address"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
@@ -47,6 +48,7 @@
             `pour_num`,
             `odds`,
             `money`,
+            `address`,
             `create_time`
         )
         values
@@ -61,6 +63,7 @@
             #{pourNum},
             #{odds},
             #{money},
+            #{address},
             #{createTime}
         )
     </insert>

@@ -25,13 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 每日签到配置表
- *
- * @author xingGuangTeam
- * @email 249893127@qq.com
- * @date 2019-03-23 15:31
- */
+
 @Api(tags = "每日签到配置表")
 @RestController
 @RequestMapping("/api/signIn")
@@ -117,6 +111,7 @@ public class ApiSignInController extends ApiBaseAction {
             mailVo.setCreateTime(new Date());
             mailVo.setType(1);
             mailVo.setIsReceive(0);
+            mailVo.setIsDelete(0);
             mailService.save(mailVo);
 
             Map map = new HashMap();

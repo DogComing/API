@@ -26,12 +26,7 @@ import java.util.Map;
 
 import static com.platform.config.ConstantConfig.*;
 
-/**
- * @program: platform
- * @description: 调取基地支付接口
- * @author: Yuan
- * @create: 2020-09-04 11:50
- **/
+
 @Api(tags = "调取基地支付接口")
 @RestController
 @RequestMapping("/api/pay")
@@ -127,6 +122,7 @@ public class ApiPayMoneyController extends ApiBaseAction {
                 logPayVo.setCurrencyTxt("USDT");
                 logPayVo.setCreateTime(new Date());
                 logPayVo.setRemarks("成功支付" + catchEquipVo.getUnum() + "USDT，获得一件 " + catchEquipVo.getEquipName() + " 捕捉装备，装备等级 " + catchEquipVo.getGrade() + "级");
+                logPayVo.setAddress(loginUser.getAddress());
                 logPayService.save(logPayVo);
 
                 return toResponsSuccess(true);
@@ -256,6 +252,7 @@ public class ApiPayMoneyController extends ApiBaseAction {
                 logPayVo.setCurrencyTxt("USDT");
                 logPayVo.setCreateTime(new Date());
                 logPayVo.setRemarks("成功支付" + 10 + "USDT，获得" + 30 + "天签到礼包");
+                logPayVo.setAddress(loginUser.getAddress());
                 logPayService.save(logPayVo);
 
                 return toResponsSuccess(true);
@@ -317,6 +314,7 @@ public class ApiPayMoneyController extends ApiBaseAction {
                 logPayVo.setCurrencyTxt("USDT");
                 logPayVo.setCreateTime(new Date());
                 logPayVo.setRemarks("成功支付" + 1 + "USDT，补充" + 30 + "点精力");
+                logPayVo.setAddress(loginUser.getAddress());
                 logPayService.save(logPayVo);
                 return toResponsSuccess(true);
             }

@@ -19,12 +19,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @program: platform
- * @description: 饲养宠物接口
- * @author: Yuan
- * @create: 2020-09-04 11:50
- **/
+
 @Api(tags = "饲养宠物接口")
 @RestController
 @RequestMapping("/api")
@@ -39,6 +34,11 @@ public class ApiRaiseController extends ApiBaseAction {
 
     /**
      * 饲养宠物
+     * @param loginUser
+     * @param id
+     * @param dogId
+     * @param type
+     * @return
      */
     @IgnoreAuth
     @GetMapping(value = "raise")
@@ -99,6 +99,12 @@ public class ApiRaiseController extends ApiBaseAction {
         return toResponsSuccess(false);
     }
 
+    /**
+     * 吞噬宠物
+     * @param loginUser
+     * @param dogId
+     * @return
+     */
     @IgnoreAuth
     @PostMapping(value = "gobble")
     @ApiOperation(value = "吞噬宠物")

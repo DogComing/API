@@ -7,10 +7,12 @@
     <resultMap type="com.platform.entity.LogGameResultVo" id="logMap">
         <result property="id" column="id"/>
         <result property="userId" column="user_id"/>
+        <result property="dogId" column="dog_id"/>
         <result property="gameNum" column="game_num"/>
         <result property="dogNumber" column="dog_number"/>
         <result property="ranking" column="ranking"/>
         <result property="isReal" column="is_real"/>
+        <result property="fightingNum" column="fighting_num"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
@@ -23,19 +25,23 @@
         insert into log_game_result
         (
             `user_id`,
+            `dog_id`,
             `game_num`,
             `dog_number`,
             `ranking`,
             `is_real`,
+            `fighting_num`,
             `create_time`
         )
         values
         (
             #{userId},
+            #{dogId},
             #{gameNum},
             #{dogNumber},
             #{ranking},
             #{isReal},
+            #{fightingNum},
             #{createTime}
         )
     </insert>

@@ -12,18 +12,13 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 用户邮件接口
- *
- * @author xingGuangTeam
- * @email 249893127@qq.com
- * @date 2019-03-23 15:31
- */
+
 @Api(tags = "用户邮件接口")
 @RestController
 @RequestMapping("/api/mail")
@@ -51,6 +46,9 @@ public class ApiMailController extends ApiBaseAction {
     private ApiUserFightEquipService userFightEquipService;
     @Autowired
     private ApiUserPropService userPropService;
+
+    @Autowired
+    private ApiLogASGService logASGService;
 
     /**
      * 获取所有邮件
@@ -143,6 +141,7 @@ public class ApiMailController extends ApiBaseAction {
                     userMap.put("dogCoin", mailVo.getAwardNum());
                     userMap.put("userId", loginUser.getUserId());
                     userService.update(userMap);
+                    mailLog(loginUser, mailVo.getAwardNum());
                 } else if (awardType.equals(2)){
                     userMap.put("residueMuscleNum", mailVo.getAwardNum());
                     userMap.put("userId", loginUser.getUserId());
@@ -161,6 +160,7 @@ public class ApiMailController extends ApiBaseAction {
                 userMap.put("dogCoin", mailVo.getAwardNum());
                 userMap.put("userId", loginUser.getUserId());
                 userService.update(userMap);
+                if (mailVo.getAwardNum() > 0) mailLog(loginUser, mailVo.getAwardNum());
             }
 
             Map map = new HashMap();
@@ -201,6 +201,7 @@ public class ApiMailController extends ApiBaseAction {
                         userMap.put("dogCoin", mailVoList.get(i).getAwardNum());
                         userMap.put("userId", loginUser.getUserId());
                         userService.update(userMap);
+                        mailLog(loginUser, mailVoList.get(i).getAwardNum());
                     } else if (awardType.equals(2)){
                         userMap.put("residueMuscleNum", mailVoList.get(i).getAwardNum());
                         userMap.put("userId", loginUser.getUserId());
@@ -218,7 +219,8 @@ public class ApiMailController extends ApiBaseAction {
                     userMap.put("residueMuscleNum", mailVoList.get(i).getBrawnNum());
                     userMap.put("dogCoin", mailVoList.get(i).getAwardNum());
                     userMap.put("userId", loginUser.getUserId());
-                    userService.update(userMap);
+                    if (mailVoList.get(i).getAwardNum() > 0) userService.update(userMap);
+                    mailLog(loginUser, mailVoList.get(i).getAwardNum());
                 }
             }
 
@@ -262,6 +264,7 @@ public class ApiMailController extends ApiBaseAction {
                 Map map = new HashMap();
                 map.put("isRead", 1);
                 map.put("isReceive", 1);
+                map.put("isDelete", 1);
                 map.put("userId", loginUser.getUserId());
                 mailService.deleteByUser(map);
             }
@@ -379,6 +382,30 @@ public class ApiMailController extends ApiBaseAction {
             fightEquipVo.setFightNum(awardNum);
             fightEquipVo.setCreateTime(new Date());
             userFightEquipService.save(fightEquipVo);
+        }
+    }
+
+    /**
+     * 领取邮件日志
+     * @param loginUser
+     * @param awardNum
+     */
+    private void mailLog(UserVo loginUser, Integer awardNum){
+
+        try {
+            LogASGVo logASGVo = new LogASGVo();
+            logASGVo.setUserId(loginUser.getUserId());
+            logASGVo.setNum(new BigDecimal(awardNum));
+            logASGVo.setLogType(9);
+            logASGVo.setLogTypeTxt("邮件获取");
+            logASGVo.setAsgType(2);
+            logASGVo.setAgsTypeTxt("获得");
+            logASGVo.setCreateTime(new Date());
+            logASGVo.setRemarks("领取邮件获取" + awardNum + "ASG");
+            logASGVo.setAddress(loginUser.getAddress());
+            logASGService.save(logASGVo);
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

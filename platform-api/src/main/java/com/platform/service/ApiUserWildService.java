@@ -28,7 +28,7 @@ public class ApiUserWildService {
 
     public int receiveRewards(Long userId, Integer wildId, Integer awardNum) { return userWildMapper.receiveRewards(userId, wildId, awardNum); }
 
-    public void makeUseOf(Long userId, Integer wildId, Integer useNum) { userWildMapper.makeUseOf(userId, wildId, useNum); }
+    public void makeUseOf(Long userId, Integer id, Integer useNum) { userWildMapper.makeUseOf(userId, id, useNum); }
 
     public List<UserWildVo> allList(Long userId) { return userWildMapper.allList(userId);}
 

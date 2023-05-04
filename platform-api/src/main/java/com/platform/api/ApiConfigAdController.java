@@ -109,6 +109,7 @@ public class ApiConfigAdController extends ApiBaseAction {
             mailVo.setAwardNum(adVo.getAwardNum());
             mailVo.setIsReceive(0);
             mailVo.setIsAttribute(0);
+            mailVo.setIsDelete(0);
             mailVo.setUserId(loginUser.getUserId());
             mailVo.setCreateTime(new Date());
             mailService.save(mailVo);

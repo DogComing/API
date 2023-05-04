@@ -66,6 +66,12 @@ public class LogPayVo implements Serializable {
     private String remarks;
 
     /**
+     * 钱包地址
+     */
+    @ApiModelProperty("钱包地址")
+    private String address;
+
+    /**
      * 创建时间
      */
     @ApiModelProperty("创建时间")

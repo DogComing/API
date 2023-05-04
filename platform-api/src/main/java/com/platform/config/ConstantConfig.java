@@ -107,7 +107,7 @@ public class ConstantConfig {
     public static Integer matchSecondsCurrent = 0;
 
     /**
-     * 当前游戏状态 0: 未匹配  1: 匹配中20秒  2: 匹配成功  3: 匹配失败  4: 等待中  5: 入场中5秒  6: 押注中120秒  7: 调整士气中20秒  8: 比赛中30秒  9: 公布比赛结果5秒
+     * 当前游戏状态 0: 未匹配  1: 匹配中60秒  2: 匹配成功  3: 匹配失败  4: 等待中  5: 入场中5秒  6: 押注中120秒  7: 调整士气中20秒  8: 比赛中30秒  9: 公布比赛结果5秒
      */
     public static Integer gameStatus = 0;
 
@@ -135,6 +135,11 @@ public class ConstantConfig {
      * 上一局的狗狗
      */
     public static List<UserDogVo> beforeList = new ArrayList<>();
+
+    /**
+     * 当前奖金池是否足够赔付
+     */
+    public static Boolean isPayFor = false;
 
     /**
      * 当前奖金池总金额

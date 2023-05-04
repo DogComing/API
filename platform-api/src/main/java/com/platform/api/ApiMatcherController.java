@@ -16,12 +16,7 @@ import java.util.Map;
 
 import static com.platform.config.ConstantConfig.*;
 
-/**
- * @program: platform
- * @description: 匹配对手
- * @author: Yuan
- * @create: 2020-08-13 17:34
- **/
+
 @Api(tags = "匹配对手")
 @RestController
 @RequestMapping("/api/matcher")
